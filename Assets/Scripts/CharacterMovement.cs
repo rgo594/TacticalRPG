@@ -7,8 +7,6 @@ public class CharacterMovement : MonoBehaviour
     private Vector3 clickedPosition;
     SpriteRenderer bodyColor;
 
-    [SerializeField] GameObject quick;
-
     [SerializeField] float speed = 5f;
 
     [Header("State Checks")]
@@ -43,9 +41,33 @@ public class CharacterMovement : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             clickedPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            if (transform.position != SnapToGrid(clickedPosition)){ moving = !moving; }
+            if (transform.position != SnapToGrid(clickedPosition)){ moving = true; }
         }
+        
+        //TODO if you click on a character while another is moving, the moving character will stop
+        foreach (CharacterMovement character in characters)
+        {
+            //filters out currently clicked on character from the characters array
+            if (character.GetComponent<CharacterMovement>() != gameObject.GetComponent<CharacterMovement>())
+            {
+                //checks to see if another character is on the tile you clicked on
+                if (character.transform.position == SnapToGrid(clickedPosition))
+                {
+                    //resets currently clicked on character, so you won't be able to have two characters selected at once
+                    clickedPosition = SnapToGrid(gameObject.transform.position);
+                    clicked = !clicked;
+                    moving = false;
+                }
+                else
+                {
+                    MoveCharacter();
+                }
+            }
+        }
+    }
 
+    private void MoveCharacter()
+    {
         if (transform.position != SnapToGrid(clickedPosition))
         {
             //moves player towards the y value of where you clicked
