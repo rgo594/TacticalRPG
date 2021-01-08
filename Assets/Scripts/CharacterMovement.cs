@@ -5,16 +5,24 @@ using UnityEngine;
 public class CharacterMovement : MonoBehaviour
 {
     private Vector3 clickedPosition;
-    float speed = 5f;
+    SpriteRenderer bodyColor;
 
+    [SerializeField] GameObject quick;
+
+    [SerializeField] float speed = 5f;
+
+    [Header("State Checks")]
     public bool clicked = false;
     public bool moving = false;
-    SpriteRenderer bodyColor;
+
+    [SerializeField] CharacterMovement[] characters;
+
 
     private void Start()
     {
         clickedPosition = gameObject.transform.position;
         bodyColor = gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>();
+        characters = FindObjectsOfType<CharacterMovement>();
     }
 
     private void OnMouseDown()
@@ -35,24 +43,34 @@ public class CharacterMovement : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             clickedPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            moving = !moving;
+            if (transform.position != SnapToGrid(clickedPosition)){ moving = !moving; }
         }
 
-        //moves player towards the y value of where you clicked
-        gameObject.transform.position = Vector3.MoveTowards(transform.position, new Vector3
-            (gameObject.transform.position.x, Mathf.RoundToInt(clickedPosition.y)), speed * Time.deltaTime);
-
-        //moves player to x value of where you clicked, after it finishes moving to the y value
-        if(gameObject.transform.position.y == Mathf.RoundToInt(clickedPosition.y))
+        if (transform.position != SnapToGrid(clickedPosition))
         {
+            //moves player towards the y value of where you clicked
             gameObject.transform.position = Vector3.MoveTowards(transform.position, new Vector3
-                (Mathf.RoundToInt(clickedPosition.x), gameObject.transform.position.y), speed * Time.deltaTime);
-        }
+                (gameObject.transform.position.x, Mathf.RoundToInt(clickedPosition.y)), speed * Time.deltaTime);
 
-        if(moving)
-        {
-            ResetCharacter();
+            //moves player to x value of where you clicked, after it finishes moving to the y value
+            if (gameObject.transform.position.y == Mathf.RoundToInt(clickedPosition.y))
+            {
+                gameObject.transform.position = Vector3.MoveTowards(transform.position, new Vector3
+                    (Mathf.RoundToInt(clickedPosition.x), gameObject.transform.position.y), speed * Time.deltaTime);
+            }
+
+            if (moving)
+            {
+                ResetCharacter();
+            }
         }
+    }
+
+    private Vector3 SnapToGrid(Vector3 rawWorldPos)
+    {
+        float newX = Mathf.RoundToInt(rawWorldPos.x);
+        float newY = Mathf.RoundToInt(rawWorldPos.y);
+        return new Vector3(newX, newY);
     }
 
     private void ResetCharacter()
