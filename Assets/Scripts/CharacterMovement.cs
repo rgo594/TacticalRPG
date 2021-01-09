@@ -78,7 +78,7 @@ public class CharacterMovement : MonoBehaviour
             //if the character is in the moving state while on the same tile as the clicked position turn off moving state
             if (moving)
             {
-                preventClicking.GetComponent<BoxCollider2D>().enabled = true;
+            preventClicking.GetComponent<BoxCollider2D>().enabled = true;
                 if (SnapToGrid(clickedPosition) == gameObject.transform.position)
                 {
                     preventClicking.GetComponent<BoxCollider2D>().enabled = false;
@@ -102,6 +102,7 @@ public class CharacterMovement : MonoBehaviour
                     clickedPosition = SnapToGrid(gameObject.transform.position);
                     clicked = !clicked;
                     moving = false;
+                    preventClicking.GetComponent<BoxCollider2D>().enabled = false;
                 }
                 else
                 {
