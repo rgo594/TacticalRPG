@@ -40,23 +40,57 @@ public class CharacterMovement : MonoBehaviour
         clicked = !clicked;
     }
 
+    private Vector3 SnapToGrid(Vector3 rawWorldPos)
+    {
+        float newX = Mathf.RoundToInt(rawWorldPos.x);
+        float newY = Mathf.RoundToInt(rawWorldPos.y);
+        return new Vector3(newX, newY);
+    }
 
     private void TargetPosition()
     {
-        //converts where you clicked into transform values
         if (Input.GetMouseButtonDown(0))
         {
-
+            //converts where you clicked into transform values
             clickedPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            //preventClicking.GetComponent<BoxCollider2D>().enabled = true;
+
             if (transform.position != SnapToGrid(clickedPosition)) { moving = !moving; }
+
             StartCoroutine(ToggleClicked());
         }
     }
 
+    private void MoveCharacter()
+    {
+        if (transform.position != SnapToGrid(clickedPosition))
+        {
+            //moves player towards the y value of where you clicked
+            gameObject.transform.position = Vector3.MoveTowards(transform.position, new Vector3
+                (gameObject.transform.position.x, Mathf.RoundToInt(clickedPosition.y)), speed * Time.deltaTime);
+
+            //moves player to x value of where you clicked, after it finishes moving to the y value
+            if (gameObject.transform.position.y == Mathf.RoundToInt(clickedPosition.y))
+            {
+                gameObject.transform.position = Vector3.MoveTowards(transform.position, new Vector3
+                    (Mathf.RoundToInt(clickedPosition.x), gameObject.transform.position.y), speed * Time.deltaTime);
+            }
+
+            //if the character is in the moving state while on the same tile as the clicked position turn off moving state
+            if (moving)
+            {
+                preventClicking.GetComponent<BoxCollider2D>().enabled = true;
+                if (SnapToGrid(clickedPosition) == gameObject.transform.position)
+                {
+                    moving = !moving;
+                    preventClicking.GetComponent<BoxCollider2D>().enabled = false;
+                }
+            }
+        }
+    }
+
+    //TODO Make it so you can't touch obstacles using overlapping colliders or layer mask
     private void MoveToTargetPosition()
     {
-        //TODO if you click on a character while another is moving, the moving character will stop
         foreach (CharacterMovement character in characters)
         {
             //filters out currently clicked on character from the characters array
@@ -78,59 +112,18 @@ public class CharacterMovement : MonoBehaviour
         }
     }
 
-    private void MoveCharacter()
-    {
-        if (transform.position != SnapToGrid(clickedPosition))
-        {
-            //moves player towards the y value of where you clicked
-            gameObject.transform.position = Vector3.MoveTowards(transform.position, new Vector3
-                (gameObject.transform.position.x, Mathf.RoundToInt(clickedPosition.y)), speed * Time.deltaTime);
-
-            //moves player to x value of where you clicked, after it finishes moving to the y value
-            if (gameObject.transform.position.y == Mathf.RoundToInt(clickedPosition.y))
-            {
-                gameObject.transform.position = Vector3.MoveTowards(transform.position, new Vector3
-                    (Mathf.RoundToInt(clickedPosition.x), gameObject.transform.position.y), speed * Time.deltaTime);
-            }
-
-            if (moving)
-            {
-                ResetCharacter();
-            }
-        }
-    }
-
-    private Vector3 SnapToGrid(Vector3 rawWorldPos)
-    {
-        float newX = Mathf.RoundToInt(rawWorldPos.x);
-        float newY = Mathf.RoundToInt(rawWorldPos.y);
-        return new Vector3(newX, newY);
-    }
-
-    private void ResetCharacter()
-    {
-        //Resets character to preclicked state
-        if (Mathf.RoundToInt(clickedPosition.x) == gameObject.transform.position.x &&
-                        Mathf.RoundToInt(clickedPosition.y) == gameObject.transform.position.y)
-        {
-            //StartCoroutine(ToggleClicked());
-            moving = !moving;
-        }
-    }
-
     void Update()
     {
         if (clicked)
         {
-            //target something
             bodyColor.color = Color.red;
             TargetPosition();
         }
         else
         {
-
             bodyColor.color = Color.white;
         }
+
         if (clickedPosition != SnapToGrid(gameObject.transform.position))
         {
             MoveToTargetPosition();
