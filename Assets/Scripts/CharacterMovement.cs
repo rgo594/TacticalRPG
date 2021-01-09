@@ -81,20 +81,19 @@ public class CharacterMovement : MonoBehaviour
                 preventClicking.GetComponent<BoxCollider2D>().enabled = true;
                 if (SnapToGrid(clickedPosition) == gameObject.transform.position)
                 {
-                    moving = !moving;
                     preventClicking.GetComponent<BoxCollider2D>().enabled = false;
+                    moving = !moving;
                 }
             }
         }
     }
 
-    //TODO Make it so you can't touch obstacles using overlapping colliders or layer mask
     private void MoveToTargetPosition()
     {
         foreach (CharacterMovement character in characters)
         {
            
-            if (character.GetComponent<CharacterMovement>() != gameObject.GetComponent<CharacterMovement>())
+            if (character.name != gameObject.name)
             {
                 //checks to see if another character is on the tile you clicked on
                 if (character.transform.position == SnapToGrid(clickedPosition))
@@ -123,10 +122,6 @@ public class CharacterMovement : MonoBehaviour
         {
             bodyColor.color = Color.white;
         }
-
-        if (clickedPosition != SnapToGrid(gameObject.transform.position))
-        {
-            MoveToTargetPosition();
-        }
+        MoveToTargetPosition();
     }
 }
