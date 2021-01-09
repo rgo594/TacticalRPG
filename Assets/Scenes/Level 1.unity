@@ -492,7 +492,6 @@ MonoBehaviour:
   speed: 5
   clicked: 0
   moving: 0
-  act: 0
   characters: []
 --- !u!4 &552810628
 Transform:
@@ -747,7 +746,7 @@ GameObject:
   m_Icon: {fileID: 6519382022992737161, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!61 &1862921731
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2041,7 +2040,6 @@ MonoBehaviour:
   speed: 5
   clicked: 0
   moving: 0
-  act: 0
   characters: []
 --- !u!4 &2127893158
 Transform:

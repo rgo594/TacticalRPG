@@ -30,14 +30,14 @@ public class CharacterMovement : MonoBehaviour
 
     private void OnMouseDown()
     {
-        StartCoroutine(ToggleClicked());
+        clicked = !clicked;
     }
 
     IEnumerator ToggleClicked()
     {
-        //prevents accidentally calling targetPosition() and OnMouseDown() at the same time
-        yield return new WaitForEndOfFrame();
-        clicked = !clicked;
+        clicked = true;
+        yield return new WaitUntil(() => moving == true);
+        clicked = false;
     }
 
     private Vector3 SnapToGrid(Vector3 rawWorldPos)
@@ -93,7 +93,7 @@ public class CharacterMovement : MonoBehaviour
     {
         foreach (CharacterMovement character in characters)
         {
-            //filters out currently clicked on character from the characters array
+           
             if (character.GetComponent<CharacterMovement>() != gameObject.GetComponent<CharacterMovement>())
             {
                 //checks to see if another character is on the tile you clicked on
