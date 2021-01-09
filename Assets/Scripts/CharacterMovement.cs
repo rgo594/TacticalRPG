@@ -14,10 +14,15 @@ public class CharacterMovement : MonoBehaviour
     public bool moving = false;
 
     [SerializeField] CharacterMovement[] characters;
+    GameObject preventClicking;
 
 
     private void Start()
     {
+        Debug.Log(GameObject.Find("PreventClicking"));
+
+        preventClicking = GameObject.Find("PreventClicking");
+
         clickedPosition = gameObject.transform.position;
         bodyColor = gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>();
         characters = FindObjectsOfType<CharacterMovement>();
@@ -35,15 +40,22 @@ public class CharacterMovement : MonoBehaviour
         clicked = !clicked;
     }
 
-    private void MoveToTargetPosition()
+
+    private void TargetPosition()
     {
         //converts where you clicked into transform values
         if (Input.GetMouseButtonDown(0))
         {
+
             clickedPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            if (transform.position != SnapToGrid(clickedPosition)){ moving = true; }
+            //preventClicking.GetComponent<BoxCollider2D>().enabled = true;
+            if (transform.position != SnapToGrid(clickedPosition)) { moving = !moving; }
+            StartCoroutine(ToggleClicked());
         }
-        
+    }
+
+    private void MoveToTargetPosition()
+    {
         //TODO if you click on a character while another is moving, the moving character will stop
         foreach (CharacterMovement character in characters)
         {
@@ -101,7 +113,7 @@ public class CharacterMovement : MonoBehaviour
         if (Mathf.RoundToInt(clickedPosition.x) == gameObject.transform.position.x &&
                         Mathf.RoundToInt(clickedPosition.y) == gameObject.transform.position.y)
         {
-            StartCoroutine(ToggleClicked());
+            //StartCoroutine(ToggleClicked());
             moving = !moving;
         }
     }
@@ -110,12 +122,18 @@ public class CharacterMovement : MonoBehaviour
     {
         if (clicked)
         {
+            //target something
             bodyColor.color = Color.red;
-            MoveToTargetPosition();
+            TargetPosition();
         }
         else
         {
+
             bodyColor.color = Color.white;
+        }
+        if (clickedPosition != SnapToGrid(gameObject.transform.position))
+        {
+            MoveToTargetPosition();
         }
     }
 }
