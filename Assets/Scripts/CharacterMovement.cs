@@ -20,6 +20,9 @@ public class CharacterMovement : MonoBehaviour
 
     MoveToButton button;
 
+    const string BUTTON_PARENT = "Tile Movement Canvas";
+    GameObject buttonParent;
+
     private void Start()
     {
         preventClicking = GameObject.Find("PreventClicking");
@@ -27,6 +30,8 @@ public class CharacterMovement : MonoBehaviour
         tileColor = gameObject.transform.GetChild(1).GetComponent<SpriteRenderer>();
         characters = FindObjectsOfType<CharacterMovement>();
         button = FindObjectOfType<MoveToButton>();
+
+        buttonParent = GameObject.Find(BUTTON_PARENT);
     }
 
     private void OnMouseDown()
@@ -34,11 +39,44 @@ public class CharacterMovement : MonoBehaviour
         clicked = !clicked;
         button.SetCharacter(gameObject.GetComponent<CharacterMovement>());
 
-        Instantiate(
-        buttonPrefab,
-        new Vector3(gameObject.transform.position.x + 1, gameObject.transform.position.y + 1),
-        Quaternion.identity);
+        for (int i = -2; i <= 2; i++)
+        {
+            if (i == 0) { continue; }
+            var horizontalButton = Instantiate(
+            buttonPrefab,
+            new Vector3(gameObject.transform.position.x + i, gameObject.transform.position.y),
+            Quaternion.identity);
+
+            var verticalButton = Instantiate(
+            buttonPrefab,
+            new Vector3(gameObject.transform.position.x, gameObject.transform.position.y + i),
+            Quaternion.identity);
+
+
+
+            verticalButton.transform.SetParent(buttonParent.transform);
+            horizontalButton.transform.SetParent(buttonParent.transform);
+
+        }
+
+        for (int i = -1; i <= 1; i++)
+        {
+            if (i == 0) { continue; }
+            var diagonal1 = Instantiate(
+            buttonPrefab,
+            new Vector3(gameObject.transform.position.x + i, gameObject.transform.position.y + i),
+            Quaternion.identity);
+
+            var diagonal2 = Instantiate(
+            buttonPrefab,
+            new Vector3((gameObject.transform.position.x + -i), (gameObject.transform.position.y + i)),
+            Quaternion.identity);
+            diagonal1.transform.SetParent(buttonParent.transform);
+            Debug.Log(diagonal2.transform.position);
+            diagonal2.transform.SetParent(buttonParent.transform);
+        }
     }
+
 
     public IEnumerator ToggleClicked()
     {

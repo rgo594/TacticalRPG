@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6511520849748635925}
   - component: {fileID: 6511520849748635927}
   - component: {fileID: 6511520849748635926}
-  - component: {fileID: 914893880}
+  - component: {fileID: 6520142930175349683}
   m_Layer: 5
   m_Name: Move To Tile Button
   m_TagString: Untagged
@@ -37,7 +37,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -41.969036, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &6511520849748635925
 MonoBehaviour:
@@ -82,7 +82,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 914893880}
+      - m_Target: {fileID: 6520142930175349683}
         m_MethodName: FindTarget
         m_Mode: 1
         m_Arguments:
@@ -130,7 +130,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &914893880
+--- !u!114 &6520142930175349683
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
