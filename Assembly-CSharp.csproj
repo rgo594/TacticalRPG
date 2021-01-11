@@ -64,7 +64,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\CharacterMovement.cs" />
+    <Compile Include="Assets\Scripts\LookForScript.cs" />
+    <Compile Include="Assets\Scripts\MoveToButton.cs" />
+    <Compile Include="Assets\Scripts\MoveableTiles.cs" />
     <Compile Include="Assets\Scripts\TestGridMovement.cs" />
+    <Compile Include="Assets\Scripts\Zerk.cs" />
     <Reference Include="UnityEngine">
       <HintPath>C:/Program Files/Unity/Hub/Editor/2019.4.12f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
     </Reference>

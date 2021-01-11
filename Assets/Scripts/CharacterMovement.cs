@@ -1,63 +1,67 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CharacterMovement : MonoBehaviour
 {
-    private Vector3 clickedPosition;
-    SpriteRenderer bodyColor;
-
-    [SerializeField] float speed = 5f;
+    SpriteRenderer tileColor;
 
     [Header("State Checks")]
-    public bool clicked = false;
-    public bool moving = false;
+    bool clicked = false;
+    bool moving = false;
+
+    Vector3 clickedPosition;
+    [SerializeField] float speed = 5f;
+    [SerializeField] GameObject buttonPrefab;
 
     [SerializeField] CharacterMovement[] characters;
     GameObject preventClicking;
 
+    MoveToButton button;
 
     private void Start()
     {
-        Debug.Log(GameObject.Find("PreventClicking"));
-
         preventClicking = GameObject.Find("PreventClicking");
-
         clickedPosition = gameObject.transform.position;
-        bodyColor = gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>();
+        tileColor = gameObject.transform.GetChild(1).GetComponent<SpriteRenderer>();
         characters = FindObjectsOfType<CharacterMovement>();
+        button = FindObjectOfType<MoveToButton>();
     }
 
     private void OnMouseDown()
     {
         clicked = !clicked;
+        button.SetCharacter(gameObject.GetComponent<CharacterMovement>());
+
+        Instantiate(
+        buttonPrefab,
+        new Vector3(gameObject.transform.position.x + 1, gameObject.transform.position.y + 1),
+        Quaternion.identity);
     }
 
-    IEnumerator ToggleClicked()
+    public IEnumerator ToggleClicked()
     {
         clicked = true;
         yield return new WaitUntil(() => moving == true);
         clicked = false;
     }
 
-    private Vector3 SnapToGrid(Vector3 rawWorldPos)
+    public Vector3 SnapToGrid(Vector3 rawWorldPos)
     {
         float newX = Mathf.RoundToInt(rawWorldPos.x);
         float newY = Mathf.RoundToInt(rawWorldPos.y);
         return new Vector3(newX, newY);
     }
 
-    private void TargetPosition()
+    public void SetMoving()
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-            //converts where you clicked into transform values
-            clickedPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        moving = !moving;
+    }
 
-            if (transform.position != SnapToGrid(clickedPosition)) { moving = !moving; }
-
-            StartCoroutine(ToggleClicked());
-        }
+    public void SetClickedPosition(Vector3 position)
+    {
+        clickedPosition = position;
     }
 
     private void MoveCharacter()
@@ -116,13 +120,14 @@ public class CharacterMovement : MonoBehaviour
     {
         if (clicked)
         {
-            bodyColor.color = Color.red;
-            TargetPosition();
+            tileColor.enabled = true;
         }
         else
         {
-            bodyColor.color = Color.white;
+            tileColor.enabled = false;
         }
         MoveToTargetPosition();
     }
+
 }
+
