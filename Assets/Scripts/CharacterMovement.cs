@@ -13,15 +13,18 @@ public class CharacterMovement : MonoBehaviour
 
     Vector3 clickedPosition;
     [SerializeField] float speed = 5f;
-    [SerializeField] GameObject buttonPrefab;
+ 
 
     [SerializeField] CharacterMovement[] characters;
     GameObject preventClicking;
+    
+    PositionController positionController;
 
-    MoveToButton button;
+    const string canvasName = "Tile Movement Canvas";
+    GameObject tileMovementCanvas;
 
-    const string BUTTON_PARENT = "Tile Movement Canvas";
-    GameObject buttonParent;
+    GameObject buttonMap;
+    [SerializeField] GameObject buttonPrefab;
 
     private void Start()
     {
@@ -29,54 +32,63 @@ public class CharacterMovement : MonoBehaviour
         clickedPosition = gameObject.transform.position;
         tileColor = gameObject.transform.GetChild(1).GetComponent<SpriteRenderer>();
         characters = FindObjectsOfType<CharacterMovement>();
-        button = FindObjectOfType<MoveToButton>();
+        positionController = FindObjectOfType<PositionController>();
 
-        buttonParent = GameObject.Find(BUTTON_PARENT);
+        tileMovementCanvas = GameObject.Find(canvasName);
+
+        CreateButtonsParent();
     }
 
     private void OnMouseDown()
     {
         clicked = !clicked;
-        button.SetCharacter(gameObject.GetComponent<CharacterMovement>());
+        positionController.SetCharacter(gameObject.GetComponent<CharacterMovement>());
+        InstantiateButtonMap();
+    }
+
+    private void InstantiateButtonMap()
+    {
+        CreateButtonsParent();
 
         for (int i = -2; i <= 2; i++)
         {
             if (i == 0) { continue; }
-            var horizontalButton = Instantiate(
-            buttonPrefab,
-            new Vector3(gameObject.transform.position.x + i, gameObject.transform.position.y),
-            Quaternion.identity);
-
-            var verticalButton = Instantiate(
-            buttonPrefab,
-            new Vector3(gameObject.transform.position.x, gameObject.transform.position.y + i),
-            Quaternion.identity);
-
-
-
-            verticalButton.transform.SetParent(buttonParent.transform);
-            horizontalButton.transform.SetParent(buttonParent.transform);
-
+            //creates horizontal buttons
+            InsantiateButtons(buttonMap, buttonPrefab, i, 0);
+            //creates vertical buttons
+            InsantiateButtons(buttonMap, buttonPrefab, 0, i);
         }
-
         for (int i = -1; i <= 1; i++)
         {
             if (i == 0) { continue; }
-            var diagonal1 = Instantiate(
-            buttonPrefab,
-            new Vector3(gameObject.transform.position.x + i, gameObject.transform.position.y + i),
-            Quaternion.identity);
-
-            var diagonal2 = Instantiate(
-            buttonPrefab,
-            new Vector3((gameObject.transform.position.x + -i), (gameObject.transform.position.y + i)),
-            Quaternion.identity);
-            diagonal1.transform.SetParent(buttonParent.transform);
-            Debug.Log(diagonal2.transform.position);
-            diagonal2.transform.SetParent(buttonParent.transform);
+            //creates diagonal buttons Southwest to Northeast
+            InsantiateButtons(buttonMap, buttonPrefab, i, i);
+            //creates diagonal buttons Southeast to Northwest
+            InsantiateButtons(buttonMap, buttonPrefab, -i, i);
         }
     }
 
+    void InsantiateButtons(GameObject buttonMap, GameObject buttonPrefab, int xButtonPosition, int yButtonPosition)
+    {
+        var button = Instantiate(
+        buttonPrefab,
+        new Vector3(gameObject.transform.position.x + xButtonPosition, gameObject.transform.position.y + yButtonPosition),
+        Quaternion.identity);
+
+        //button.transform.SetParent(buttonParent.transform);
+        button.transform.SetParent(buttonMap.transform);
+    }
+
+    void CreateButtonsParent()
+    {
+        buttonMap = GameObject.Find("Button Map");
+
+        if (!GameObject.Find("Button Map"))
+        {
+            buttonMap = new GameObject("Button Map");
+            buttonMap.transform.SetParent(tileMovementCanvas.transform);
+        }
+    }
 
     public IEnumerator ToggleClicked()
     {
@@ -120,7 +132,9 @@ public class CharacterMovement : MonoBehaviour
             //if the character is in the moving state while on the same tile as the clicked position turn off moving state
             if (moving)
             {
-            preventClicking.GetComponent<BoxCollider2D>().enabled = true;
+                Destroy(GameObject.Find("Button Map"));
+                //prevent clicking other characters while one is in the moving state
+                preventClicking.GetComponent<BoxCollider2D>().enabled = true;
                 if (SnapToGrid(clickedPosition) == gameObject.transform.position)
                 {
                     preventClicking.GetComponent<BoxCollider2D>().enabled = false;
@@ -134,17 +148,18 @@ public class CharacterMovement : MonoBehaviour
     {
         foreach (CharacterMovement character in characters)
         {
-           
             if (character.name != gameObject.name)
             {
                 //checks to see if another character is on the tile you clicked on
                 if (character.transform.position == SnapToGrid(clickedPosition))
                 {
                     //resets currently clicked on character, so you won't be able to have two characters selected at once
+                    Destroy(GameObject.Find("Button Map"));
                     clickedPosition = SnapToGrid(gameObject.transform.position);
                     clicked = !clicked;
                     moving = false;
                     preventClicking.GetComponent<BoxCollider2D>().enabled = false;
+                    //Destroy(GameObject.Find("Button Map"));
                 }
                 else
                 {
@@ -156,14 +171,7 @@ public class CharacterMovement : MonoBehaviour
 
     void Update()
     {
-        if (clicked)
-        {
-            tileColor.enabled = true;
-        }
-        else
-        {
-            tileColor.enabled = false;
-        }
+        if (clicked) { tileColor.enabled = true; } else { tileColor.enabled = false; }
         MoveToTargetPosition();
     }
 

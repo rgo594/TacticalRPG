@@ -2,13 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MoveToButton : MonoBehaviour
+
+//Sets what character can be moved and what position its going to move to
+public class PositionController : MonoBehaviour
 {
     [SerializeField] CharacterMovement character;
 
     public void SetCharacter(CharacterMovement clickedCharacter)
     {
         character = clickedCharacter;
+
     }
 
     public void TargetPosition()
