@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 468308859282690221}
   - component: {fileID: 468308859282690210}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -92,7 +92,7 @@ GameObject:
   m_Component:
   - component: {fileID: 468308859912835135}
   - component: {fileID: 468308859912835132}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Highlight Tile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -175,7 +175,7 @@ GameObject:
   - component: {fileID: 468308859938679903}
   - component: {fileID: 468308859938679902}
   - component: {fileID: 468308859938679897}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Zerk
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -211,9 +211,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 5
+  characters: []
   buttonPrefab: {fileID: 6511520849748635923, guid: b471ea8541335514189631ae36e1acfc,
     type: 3}
-  characters: []
 --- !u!61 &468308859938679902
 BoxCollider2D:
   m_ObjectHideFlags: 0

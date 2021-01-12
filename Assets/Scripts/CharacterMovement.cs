@@ -25,6 +25,8 @@ public class CharacterMovement : MonoBehaviour
     GameObject buttonMap;
     [SerializeField] GameObject buttonPrefab;
 
+    BoxCollider2D myBodyCollider;
+
     private void Start()
     {
         preventClicking = GameObject.Find("PreventClicking");
@@ -36,6 +38,8 @@ public class CharacterMovement : MonoBehaviour
         tileMovementCanvas = GameObject.Find(canvasName);
 
         CreateButtonsParent();
+
+        myBodyCollider = gameObject.GetComponent<BoxCollider2D>();
     }
 
     private void OnMouseDown()
@@ -174,7 +178,12 @@ public class CharacterMovement : MonoBehaviour
     {
         if (clicked) { tileColor.enabled = true; } else { tileColor.enabled = false; }
         MoveToTargetPosition();
-    }
 
+        if(myBodyCollider.IsTouchingLayers(LayerMask.GetMask("Obstacles")))
+        {
+            Debug.Log("works");
+        }
+
+    }
 }
 

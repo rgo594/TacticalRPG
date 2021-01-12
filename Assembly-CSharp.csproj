@@ -65,7 +65,6 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\CharacterMovement.cs" />
     <Compile Include="Assets\Scripts\FindPositionController.cs" />
-    <Compile Include="Assets\Scripts\MoveableTiles.cs" />
     <Compile Include="Assets\Scripts\PositionController.cs" />
     <Compile Include="Assets\Scripts\TestGridMovement.cs" />
     <Compile Include="Assets\Scripts\Zerk.cs" />
