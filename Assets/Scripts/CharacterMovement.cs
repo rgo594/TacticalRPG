@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class CharacterMovement : MonoBehaviour
 {
@@ -41,13 +40,15 @@ public class CharacterMovement : MonoBehaviour
 
     private void OnMouseDown()
     {
+        Destroy(GameObject.Find("Button Map"));
         clicked = !clicked;
         positionController.SetCharacter(gameObject.GetComponent<CharacterMovement>());
-        InstantiateButtonMap();
+        StartCoroutine(InstantiateButtonMap());
     }
 
-    private void InstantiateButtonMap()
+    IEnumerator InstantiateButtonMap()
     {
+        yield return new WaitForEndOfFrame();
         CreateButtonsParent();
 
         for (int i = -2; i <= 2; i++)
@@ -154,7 +155,7 @@ public class CharacterMovement : MonoBehaviour
                 if (character.transform.position == SnapToGrid(clickedPosition))
                 {
                     //resets currently clicked on character, so you won't be able to have two characters selected at once
-                    Destroy(GameObject.Find("Button Map"));
+                    //Destroy(GameObject.Find("Button Map"));
                     clickedPosition = SnapToGrid(gameObject.transform.position);
                     clicked = !clicked;
                     moving = false;

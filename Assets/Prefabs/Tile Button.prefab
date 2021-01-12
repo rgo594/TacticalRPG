@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6511520849748635926}
   - component: {fileID: 6520142930175349683}
   m_Layer: 5
-  m_Name: Move To Tile Button
+  m_Name: Tile Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
