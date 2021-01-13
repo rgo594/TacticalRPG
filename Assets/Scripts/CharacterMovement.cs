@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class CharacterMovement : MonoBehaviour
 {
+    int instanceCounter;
     SpriteRenderer tileColor;
 
     [Header("State Checks")]
@@ -73,12 +74,14 @@ public class CharacterMovement : MonoBehaviour
         }
         for (int tileInstances = -(straightTilesLength - 1); tileInstances < straightTilesLength; tileInstances++)
         {
-          for (int incLength = 1; incLength <= ReturnGreater(tileInstances, straightTilesLength); incLength++)
+          for (int incLength = ReturnGreater(tileInstances, straightTilesLength); incLength <= ReturnGreater(tileInstances, straightTilesLength); incLength++)
             { 
               for (int i = -incLength; i <= incLength; i++)
                 {
                     if (i == 0|| tileInstances == 0) { continue; }
                     InsantiateButtons(buttonMap, buttonPrefab, tileInstances, i);
+                    instanceCounter++;
+                    Debug.Log(instanceCounter);
                 }
             }
         }
