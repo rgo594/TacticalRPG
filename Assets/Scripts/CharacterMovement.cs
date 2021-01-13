@@ -27,6 +27,8 @@ public class CharacterMovement : MonoBehaviour
 
     BoxCollider2D myBodyCollider;
 
+    FindPositionController testCollider;
+
     private void Start()
     {
         preventClicking = GameObject.Find("PreventClicking");
@@ -37,9 +39,12 @@ public class CharacterMovement : MonoBehaviour
 
         tileMovementCanvas = GameObject.Find(canvasName);
 
+
         CreateButtonsParent();
 
         myBodyCollider = gameObject.GetComponent<BoxCollider2D>();
+
+        testCollider = FindObjectOfType<FindPositionController>();
     }
 
     private void OnMouseDown()
@@ -50,37 +55,54 @@ public class CharacterMovement : MonoBehaviour
         StartCoroutine(InstantiateButtonMap());
     }
 
+
+    //TODO Heavy cleaning and refactoring
     IEnumerator InstantiateButtonMap()
     {
         yield return new WaitForEndOfFrame();
         CreateButtonsParent();
+        int straightTilesLength = 4;
 
-        for (int i = -2; i <= 2; i++)
+        for (int tile = -straightTilesLength; tile <= straightTilesLength; tile++)
         {
-            if (i == 0) { continue; }
+            if (tile == 0) { continue; }
             //creates horizontal buttons
-            InsantiateButtons(buttonMap, buttonPrefab, i, 0);
+            InsantiateButtons(buttonMap, buttonPrefab, tile, 0);
             //creates vertical buttons
-            InsantiateButtons(buttonMap, buttonPrefab, 0, i);
+            InsantiateButtons(buttonMap, buttonPrefab, 0, tile);
         }
-        for (int i = -1; i <= 1; i++)
+        for (int tileInstances = -(straightTilesLength - 1); tileInstances < straightTilesLength; tileInstances++)
         {
-            if (i == 0) { continue; }
-            //creates diagonal buttons Southwest to Northeast
-            InsantiateButtons(buttonMap, buttonPrefab, i, i);
-            //creates diagonal buttons Southeast to Northwest
-            InsantiateButtons(buttonMap, buttonPrefab, -i, i);
+          for (int incLength = 1; incLength <= ReturnGreater(tileInstances, straightTilesLength); incLength++)
+            { 
+              for (int i = -incLength; i <= incLength; i++)
+                {
+                    if (i == 0|| tileInstances == 0) { continue; }
+                    InsantiateButtons(buttonMap, buttonPrefab, tileInstances, i);
+                }
+            }
+        }
+    }
+
+    private int ReturnGreater(int oldNum, int newNum)
+    {
+        if (oldNum < 0)
+        {
+            return oldNum + newNum;
+        }
+        else
+        {
+            return newNum - oldNum;
         }
     }
 
     void InsantiateButtons(GameObject buttonMap, GameObject buttonPrefab, int xButtonPosition, int yButtonPosition)
-    {
+    { 
         var button = Instantiate(
         buttonPrefab,
         new Vector3(gameObject.transform.position.x + xButtonPosition, gameObject.transform.position.y + yButtonPosition),
         Quaternion.identity);
 
-        //button.transform.SetParent(buttonParent.transform);
         button.transform.SetParent(buttonMap.transform);
     }
 
@@ -174,6 +196,8 @@ public class CharacterMovement : MonoBehaviour
         }
     }
 
+   
+
     void Update()
     {
         if (clicked) { tileColor.enabled = true; } else { tileColor.enabled = false; }
@@ -184,6 +208,10 @@ public class CharacterMovement : MonoBehaviour
             Debug.Log("works");
         }
 
+/*        if (testCollider.IsTouchingLayers(LayerMask.GetMask("Characters")))
+        {
+
+        }*/
     }
 }
 

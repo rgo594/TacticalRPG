@@ -521,7 +521,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 10
+  m_SortingOrder: 4
   m_TargetDisplay: 0
 --- !u!224 &481838146
 RectTransform:
@@ -640,7 +640,7 @@ PrefabInstance:
     - target: {fileID: 468308859938679900, guid: 52a8c38e19443af4f8877ca8c7b5ed44,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 9
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 468308859938679900, guid: 52a8c38e19443af4f8877ca8c7b5ed44,
         type: 3}
@@ -3138,7 +3138,7 @@ PrefabInstance:
     - target: {fileID: 468308859938679900, guid: 52a8c38e19443af4f8877ca8c7b5ed44,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 468308859938679900, guid: 52a8c38e19443af4f8877ca8c7b5ed44,
         type: 3}
@@ -3189,6 +3189,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 468308859938679902, guid: 52a8c38e19443af4f8877ca8c7b5ed44,
+        type: 3}
+      propertyPath: m_Offset.y
+      value: -0.029293299
+      objectReference: {fileID: 0}
+    - target: {fileID: 468308859938679902, guid: 52a8c38e19443af4f8877ca8c7b5ed44,
+        type: 3}
+      propertyPath: m_Size.y
+      value: 0.6289487
+      objectReference: {fileID: 0}
+    - target: {fileID: 468308859938679902, guid: 52a8c38e19443af4f8877ca8c7b5ed44,
+        type: 3}
+      propertyPath: m_Offset.x
+      value: -0.019515455
+      objectReference: {fileID: 0}
+    - target: {fileID: 468308859938679902, guid: 52a8c38e19443af4f8877ca8c7b5ed44,
+        type: 3}
+      propertyPath: m_Size.x
+      value: 0.6487222
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 52a8c38e19443af4f8877ca8c7b5ed44, type: 3}
