@@ -4,18 +4,18 @@ using UnityEngine;
 
 public class CharacterMovement : MonoBehaviour
 {
-    int instanceCounter;
     SpriteRenderer tileColor;
 
     [Header("State Checks")]
-    bool clicked = false;
-    bool moving = false;
+    public bool clicked = false;
+    public bool moving = false;
 
-    Vector3 clickedPosition;
+    [Header("Movement")]
+    [SerializeField] int movesAvailable = 4;
     [SerializeField] float speed = 5f;
- 
 
-    [SerializeField] CharacterMovement[] characters;
+    public Vector3 clickedPosition;
+
     GameObject preventClicking;
     
     PositionController positionController;
@@ -28,78 +28,77 @@ public class CharacterMovement : MonoBehaviour
 
     BoxCollider2D myBodyCollider;
 
-    FindPositionController testCollider;
 
     private void Start()
     {
         preventClicking = GameObject.Find("PreventClicking");
         clickedPosition = gameObject.transform.position;
+
         tileColor = gameObject.transform.GetChild(1).GetComponent<SpriteRenderer>();
-        characters = FindObjectsOfType<CharacterMovement>();
+
         positionController = FindObjectOfType<PositionController>();
 
         tileMovementCanvas = GameObject.Find(canvasName);
-
-
         CreateButtonsParent();
 
         myBodyCollider = gameObject.GetComponent<BoxCollider2D>();
 
-        testCollider = FindObjectOfType<FindPositionController>();
+        GameObject.Find("Button Map");
     }
 
+    
     private void OnMouseDown()
     {
-        Destroy(GameObject.Find("Button Map"));
-        clicked = !clicked;
-        positionController.SetCharacter(gameObject.GetComponent<CharacterMovement>());
-        StartCoroutine(InstantiateButtonMap());
+        //if (buttonMap.transform.childCount > 0) { Destroy(buttonMap); }
+        if (myBodyCollider)
+        {
+            Destroy(GameObject.Find("Button Map"));
+            clicked = !clicked;
+            positionController.SetCharacter(gameObject.GetComponent<CharacterMovement>());
+            StartCoroutine(InstantiateButtonMap());
+            Debug.Log(gameObject.name);
+        }
     }
-
 
     //TODO Heavy cleaning and refactoring
     IEnumerator InstantiateButtonMap()
     {
         yield return new WaitForEndOfFrame();
         CreateButtonsParent();
-        int straightTilesLength = 4;
 
-        for (int tile = -straightTilesLength; tile <= straightTilesLength; tile++)
+        //starts movesAvailable tiles left of the character, and iterates until movesAvailable tiles right of the character
+        for (int xStartPosition = -(movesAvailable); xStartPosition <= movesAvailable; xStartPosition++)
         {
-            if (tile == 0) { continue; }
-            //creates horizontal buttons
-            InsantiateButtons(buttonMap, buttonPrefab, tile, 0);
-            //creates vertical buttons
-            InsantiateButtons(buttonMap, buttonPrefab, 0, tile);
-        }
-        for (int tileInstances = -(straightTilesLength - 1); tileInstances < straightTilesLength; tileInstances++)
-        {
-          for (int incLength = ReturnGreater(tileInstances, straightTilesLength); incLength <= ReturnGreater(tileInstances, straightTilesLength); incLength++)
-            { 
-              for (int i = -incLength; i <= incLength; i++)
+            //TODO add explanation
+            for (int yButtonRange = LeftOrRightPlane(xStartPosition, movesAvailable); yButtonRange <= LeftOrRightPlane(xStartPosition, movesAvailable); yButtonRange++)
+            {
+                //TODO add explanation
+                for (int buttonInstance = -yButtonRange; buttonInstance <= yButtonRange; buttonInstance++)
                 {
-                    if (i == 0|| tileInstances == 0) { continue; }
-                    InsantiateButtons(buttonMap, buttonPrefab, tileInstances, i);
-                    instanceCounter++;
-                    Debug.Log(instanceCounter);
+                    if (buttonInstance == 0 && xStartPosition == 0) { continue; }
+                    InsantiateButton(buttonMap, buttonPrefab, xStartPosition, buttonInstance);
                 }
             }
         }
     }
 
-    private int ReturnGreater(int oldNum, int newNum)
+    private int LeftOrRightPlane(int oldNum, int newNum)
     {
+        //if left of the character, instantiate from smallest to greatest <
         if (oldNum < 0)
         {
             return oldNum + newNum;
         }
+        //if right of the character, instantiate greatest to smallest >
         else
         {
+
             return newNum - oldNum;
         }
+        //resulting button map shape should look like <>
     }
 
-    void InsantiateButtons(GameObject buttonMap, GameObject buttonPrefab, int xButtonPosition, int yButtonPosition)
+    void InsantiateButton(GameObject buttonMap, GameObject buttonPrefab, int xButtonPosition, int yButtonPosition)
     { 
         var button = Instantiate(
         buttonPrefab,
@@ -174,47 +173,34 @@ public class CharacterMovement : MonoBehaviour
         }
     }
 
-    private void MoveToTargetPosition()
-    {
-        foreach (CharacterMovement character in characters)
-        {
-            if (character.name != gameObject.name)
-            {
-                //checks to see if another character is on the tile you clicked on
-                if (character.transform.position == SnapToGrid(clickedPosition))
-                {
-                    //resets currently clicked on character, so you won't be able to have two characters selected at once
-                    //Destroy(GameObject.Find("Button Map"));
-                    clickedPosition = SnapToGrid(gameObject.transform.position);
-                    clicked = !clicked;
-                    moving = false;
-                    preventClicking.GetComponent<BoxCollider2D>().enabled = false;
-                    //Destroy(GameObject.Find("Button Map"));
-                }
-                else
-                {
-                    MoveCharacter();
-                }
-            }
-        }
-    }
-
    
 
     void Update()
     {
-        if (clicked) { tileColor.enabled = true; } else { tileColor.enabled = false; }
-        MoveToTargetPosition();
-
-        if(myBodyCollider.IsTouchingLayers(LayerMask.GetMask("Obstacles")))
-        {
-            Debug.Log("works");
+        if (clicked) {
+            tileColor.enabled = true;
         }
+        else { tileColor.enabled = false; }
 
-/*        if (testCollider.IsTouchingLayers(LayerMask.GetMask("Characters")))
-        {
+        MoveCharacter();
 
-        }*/
     }
 }
 
+
+
+/*//checks to see if another character is on the tile you clicked on
+if (character.transform.position == SnapToGrid(clickedPosition))
+{
+    //resets currently clicked on character, so you won't be able to have two characters selected at once
+    //Destroy(GameObject.Find("Button Map"));
+    *//*                    clickedPosition = SnapToGrid(gameObject.transform.position);
+                        clicked = !clicked;
+                        moving = false;
+                        preventClicking.GetComponent<BoxCollider2D>().enabled = false;
+                        tileColor.enabled = false;*//*
+    //Destroy(GameObject.Find("Button Map"));
+    Debug.Log("other character there");
+}
+else
+{*/

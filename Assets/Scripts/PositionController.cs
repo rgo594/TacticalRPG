@@ -6,23 +6,35 @@ using UnityEngine;
 //Sets what character can be moved and what position its going to move to
 public class PositionController : MonoBehaviour
 {
+    [SerializeField] CharacterMovement previousCharacter;
     [SerializeField] CharacterMovement character;
 
     public void SetCharacter(CharacterMovement clickedCharacter)
     {
+        previousCharacter = character;
         character = clickedCharacter;
-
     }
 
     public void TargetPosition()
     {
-        
+       // character.newbool = true;
+
         character.SetClickedPosition(Camera.main.ScreenToWorldPoint(Input.mousePosition));
         Vector3 clickedPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
         if (transform.position != character.SnapToGrid(clickedPosition)) { character.SetMoving(); }
 
         StartCoroutine(character.ToggleClicked());
+
+        Debug.Log(clickedPosition);
+    }
+
+    private void Update()
+    {
+        if (character.clicked == true)
+        {
+            previousCharacter.clicked = false;
+        }
     }
 
 }

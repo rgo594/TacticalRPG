@@ -210,7 +210,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a00469dad61ee3f40b423397c8682a41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 5
+  clicked: 0
+  moving: 0
+  movesAvailable: 4
+  speed: 10
   characters: []
   buttonPrefab: {fileID: 6511520849748635923, guid: b471ea8541335514189631ae36e1acfc,
     type: 3}
@@ -238,7 +241,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.95, y: 0.95}
   m_EdgeRadius: 0
 --- !u!50 &468308859938679897
 Rigidbody2D:
