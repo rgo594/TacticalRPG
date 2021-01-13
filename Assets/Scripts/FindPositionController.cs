@@ -35,10 +35,6 @@ public class FindPositionController : MonoBehaviour
         positionController.TargetPosition();
     }
 
-    private void OnCollisionStay2D(Collision2D collision)
-    {
-        Debug.Log(collision);
-    }
 
     // Update is called once per frame
     void Update()

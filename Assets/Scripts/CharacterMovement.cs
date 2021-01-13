@@ -52,13 +52,53 @@ public class CharacterMovement : MonoBehaviour
         //if (buttonMap.transform.childCount > 0) { Destroy(buttonMap); }
         if (myBodyCollider)
         {
-            Destroy(GameObject.Find("Button Map"));
             clicked = !clicked;
             positionController.SetCharacter(gameObject.GetComponent<CharacterMovement>());
-            StartCoroutine(InstantiateButtonMap());
-            Debug.Log(gameObject.name);
+            
+            if (clicked)
+            {
+                StartCoroutine(InstantiateButtonMap());
+            }
+            else
+            {
+                DestroyButtonMap();
+            }
         }
     }
+
+    public Vector3 SnapToGrid(Vector3 rawWorldPos)
+    {
+        float newX = Mathf.RoundToInt(rawWorldPos.x);
+        float newY = Mathf.RoundToInt(rawWorldPos.y);
+        return new Vector3(newX, newY);
+    }
+
+    public IEnumerator ToggleClicked()
+    {
+        clicked = true;
+        yield return new WaitUntil(() => moving == true);
+        clicked = false;
+    }
+
+    public void SetMoving()
+    {
+        moving = !moving;
+    }
+
+    public void SetClicked(bool newClicked)
+    {
+        clicked = newClicked;
+    }
+    public void SetClickedPosition(Vector3 position)
+    {
+        clickedPosition = position;
+    }
+
+    public void DestroyButtonMap()
+    {
+        Destroy(buttonMap);
+    }
+
 
     //TODO Heavy cleaning and refactoring
     IEnumerator InstantiateButtonMap()
@@ -119,30 +159,6 @@ public class CharacterMovement : MonoBehaviour
         }
     }
 
-    public IEnumerator ToggleClicked()
-    {
-        clicked = true;
-        yield return new WaitUntil(() => moving == true);
-        clicked = false;
-    }
-
-    public Vector3 SnapToGrid(Vector3 rawWorldPos)
-    {
-        float newX = Mathf.RoundToInt(rawWorldPos.x);
-        float newY = Mathf.RoundToInt(rawWorldPos.y);
-        return new Vector3(newX, newY);
-    }
-
-    public void SetMoving()
-    {
-        moving = !moving;
-    }
-
-    public void SetClickedPosition(Vector3 position)
-    {
-        clickedPosition = position;
-    }
-
     private void MoveCharacter()
     {
         if (transform.position != SnapToGrid(clickedPosition))
@@ -173,8 +189,6 @@ public class CharacterMovement : MonoBehaviour
         }
     }
 
-   
-
     void Update()
     {
         if (clicked) {
@@ -186,21 +200,3 @@ public class CharacterMovement : MonoBehaviour
 
     }
 }
-
-
-
-/*//checks to see if another character is on the tile you clicked on
-if (character.transform.position == SnapToGrid(clickedPosition))
-{
-    //resets currently clicked on character, so you won't be able to have two characters selected at once
-    //Destroy(GameObject.Find("Button Map"));
-    *//*                    clickedPosition = SnapToGrid(gameObject.transform.position);
-                        clicked = !clicked;
-                        moving = false;
-                        preventClicking.GetComponent<BoxCollider2D>().enabled = false;
-                        tileColor.enabled = false;*//*
-    //Destroy(GameObject.Find("Button Map"));
-    Debug.Log("other character there");
-}
-else
-{*/

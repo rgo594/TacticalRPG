@@ -11,30 +11,35 @@ public class PositionController : MonoBehaviour
 
     public void SetCharacter(CharacterMovement clickedCharacter)
     {
-        previousCharacter = character;
+        if(clickedCharacter != character)
+        { 
+            previousCharacter = character; 
+        }
+        
         character = clickedCharacter;
     }
 
     public void TargetPosition()
     {
-       // character.newbool = true;
-
         character.SetClickedPosition(Camera.main.ScreenToWorldPoint(Input.mousePosition));
         Vector3 clickedPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
         if (transform.position != character.SnapToGrid(clickedPosition)) { character.SetMoving(); }
 
         StartCoroutine(character.ToggleClicked());
-
-        Debug.Log(clickedPosition);
     }
 
     private void Update()
     {
-        if (character.clicked == true)
+        if (character && previousCharacter)
         {
-            previousCharacter.clicked = false;
+            if (character.clicked == true)
+            {
+                previousCharacter.DestroyButtonMap();
+                previousCharacter.SetClicked(false);
+            }
         }
+
     }
 
 }
