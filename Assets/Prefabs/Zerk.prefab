@@ -214,8 +214,7 @@ MonoBehaviour:
   moving: 0
   movesAvailable: 4
   speed: 10
-  characters: []
-  buttonPrefab: {fileID: 6511520849748635923, guid: b471ea8541335514189631ae36e1acfc,
+  buttonPrefab: {fileID: 1655891570656342469, guid: 62f662f9f6f1d4b4292b0dd3d997653e,
     type: 3}
 --- !u!61 &468308859938679902
 BoxCollider2D:

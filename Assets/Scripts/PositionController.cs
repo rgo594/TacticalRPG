@@ -29,6 +29,11 @@ public class PositionController : MonoBehaviour
         StartCoroutine(character.ToggleClicked());
     }
 
+    private void OnMouseDown()
+    {
+        Debug.Log("works");
+    }
+
     private void Update()
     {
         if (character && previousCharacter)

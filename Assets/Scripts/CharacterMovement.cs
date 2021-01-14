@@ -14,7 +14,7 @@ public class CharacterMovement : MonoBehaviour
     [SerializeField] int movesAvailable = 4;
     [SerializeField] float speed = 5f;
 
-    public Vector3 clickedPosition;
+    Vector3 clickedPosition;
 
     GameObject preventClicking;
     
@@ -27,7 +27,6 @@ public class CharacterMovement : MonoBehaviour
     [SerializeField] GameObject buttonPrefab;
 
     BoxCollider2D myBodyCollider;
-
 
     private void Start()
     {
@@ -43,7 +42,7 @@ public class CharacterMovement : MonoBehaviour
 
         myBodyCollider = gameObject.GetComponent<BoxCollider2D>();
 
-        GameObject.Find("Button Map");
+        
     }
 
     
@@ -116,7 +115,7 @@ public class CharacterMovement : MonoBehaviour
                 for (int buttonInstance = -yButtonRange; buttonInstance <= yButtonRange; buttonInstance++)
                 {
                     if (buttonInstance == 0 && xStartPosition == 0) { continue; }
-                    InsantiateButton(buttonMap, buttonPrefab, xStartPosition, buttonInstance);
+                    InsantiateButton(buttonMap.transform, buttonPrefab, xStartPosition, buttonInstance);
                 }
             }
         }
@@ -138,14 +137,15 @@ public class CharacterMovement : MonoBehaviour
         //resulting button map shape should look like <>
     }
 
-    void InsantiateButton(GameObject buttonMap, GameObject buttonPrefab, int xButtonPosition, int yButtonPosition)
-    { 
+    void InsantiateButton(Transform buttonMap, GameObject buttonPrefab, int xButtonPosition, int yButtonPosition)
+    {
         var button = Instantiate(
         buttonPrefab,
-        new Vector3(gameObject.transform.position.x + xButtonPosition, gameObject.transform.position.y + yButtonPosition),
+        new Vector3(gameObject.transform.position.x + xButtonPosition, gameObject.transform.position.y + yButtonPosition, 1),
         Quaternion.identity);
 
-        button.transform.SetParent(buttonMap.transform);
+        button.transform.SetParent(buttonMap.transform); //change to .transform when normal parent
+
     }
 
     void CreateButtonsParent()
@@ -155,8 +155,9 @@ public class CharacterMovement : MonoBehaviour
         if (!GameObject.Find("Button Map"))
         {
             buttonMap = new GameObject("Button Map");
-            buttonMap.transform.SetParent(tileMovementCanvas.transform);
+            //buttonMap.transform.SetParent(tileMovementCanvas.transform);
         }
+        buttonMap = GameObject.Find("Button Map");
     }
 
     private void MoveCharacter()

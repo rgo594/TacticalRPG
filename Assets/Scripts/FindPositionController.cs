@@ -23,11 +23,13 @@ This script is tied to the button prefab which gets loaded into its own onclick.
 public class FindPositionController : MonoBehaviour
 {
     PositionController positionController;
+    Color originalColor;
 
     // Start is called before the first frame update
     void Start()
     {
         positionController = FindObjectOfType<PositionController>();
+        originalColor = gameObject.GetComponent<SpriteRenderer>().color;
     }
 
     public void FindTarget()
@@ -35,6 +37,20 @@ public class FindPositionController : MonoBehaviour
         positionController.TargetPosition();
     }
 
+    public void OnMouseDown()
+    {
+        positionController.TargetPosition();
+    }
+
+    public void OnMouseOver()
+    {
+        gameObject.GetComponent<SpriteRenderer>().color = Color.green;
+    }
+
+    public void OnMouseExit()
+    {
+        gameObject.GetComponent<SpriteRenderer>().color = originalColor;
+    }
 
     // Update is called once per frame
     void Update()
