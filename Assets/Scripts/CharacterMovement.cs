@@ -22,6 +22,8 @@ public class CharacterMovement : MonoBehaviour
     BoxCollider2D myBodyCollider;
     SpriteRenderer tileColor;
 
+    [SerializeField] Obstacles[] obstacles;
+
     private void Start()
     {
         preventClicking = GameObject.Find("PreventClicking");
@@ -32,7 +34,9 @@ public class CharacterMovement : MonoBehaviour
         buttonController = FindObjectOfType<ButtonController>();
         CreateButtonsParent();
 
-        myBodyCollider = gameObject.GetComponent<BoxCollider2D>();     
+        myBodyCollider = gameObject.GetComponent<BoxCollider2D>();
+
+        obstacles = FindObjectsOfType<Obstacles>();
     }
 
     
@@ -122,7 +126,7 @@ public class CharacterMovement : MonoBehaviour
     {
         var button = Instantiate(
         buttonPrefab,
-        new Vector3(gameObject.transform.position.x + xButtonPosition, gameObject.transform.position.y + yButtonPosition, 1),
+        new Vector3(gameObject.transform.position.x + xButtonPosition, gameObject.transform.position.y + yButtonPosition, 2),
         Quaternion.identity);
 
         button.transform.SetParent(buttonMap.transform);
@@ -168,5 +172,6 @@ public class CharacterMovement : MonoBehaviour
     {
         if (clicked) { tileColor.enabled = true; } else { tileColor.enabled = false; }
         if (transform.position != SnapToGrid(clickedPosition)) { MoveCharacter(); }
+
     }
 }
