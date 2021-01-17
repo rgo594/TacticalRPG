@@ -9,20 +9,16 @@ public class CharacterMovement : MonoBehaviour
     public bool moving = false;
 
     [Header("Movement")]
-    [SerializeField] int movesAvailable = 4;
+    [SerializeField] public int movesAvailable = 4;
     [SerializeField] float speed = 5f;
 
-    [SerializeField] GameObject buttonPrefab;
-    GameObject buttonMap;
+    public GameObject buttonMap;
     ButtonController buttonController;
 
     Vector3 clickedPosition;
     GameObject preventClicking;
 
-    BoxCollider2D myBodyCollider;
     SpriteRenderer tileColor;
-
-    [SerializeField] Obstacles[] obstacles;
 
     private void Start()
     {
@@ -32,30 +28,23 @@ public class CharacterMovement : MonoBehaviour
         tileColor = gameObject.transform.GetChild(1).GetComponent<SpriteRenderer>();
 
         buttonController = FindObjectOfType<ButtonController>();
-        CreateButtonsParent();
-
-        myBodyCollider = gameObject.GetComponent<BoxCollider2D>();
-
-        obstacles = FindObjectsOfType<Obstacles>();
     }
 
     
     private void OnMouseDown()
     {
-        if (myBodyCollider)
-        {
-            clicked = !clicked;
-            buttonController.SetCharacter(gameObject.GetComponent<CharacterMovement>());
-            
+        clicked = !clicked;
+        buttonController.SetCharacter(gameObject.GetComponent<CharacterMovement>());
+        
             if (clicked)
             {
-                StartCoroutine(InstantiateButtonMap());
+                buttonController.CreateButtonsParent();
+                buttonController.InstantiateButtonMap();
             }
             else
             {
-                DestroyButtonMap();
+                buttonController.DestroyButtonMap();
             }
-        }
     }
 
     public Vector3 SnapToGrid(Vector3 rawWorldPos)
@@ -91,58 +80,9 @@ public class CharacterMovement : MonoBehaviour
         Destroy(buttonMap);
     }
 
-    IEnumerator InstantiateButtonMap()
+    IEnumerator MoveCharacter()
     {
         yield return new WaitForEndOfFrame();
-        CreateButtonsParent();
-
-        //starts movesAvailable tiles left of the character, and iterates until movesAvailable tiles right of the character
-        for (int xStartPosition = -(movesAvailable); xStartPosition <= movesAvailable; xStartPosition++)
-        {
-            for (int buttonInstance = -LeftOrRightPlane(xStartPosition, movesAvailable); buttonInstance <= LeftOrRightPlane(xStartPosition, movesAvailable); buttonInstance++) //for (int buttonInstance = -yButtonRange; buttonInstance <= yButtonRange; buttonInstance++)
-            {
-                if (buttonInstance == 0 && xStartPosition == 0) { continue; }
-                InsantiateButton(buttonMap.transform, buttonPrefab, xStartPosition, buttonInstance);
-            }
-        }
-    }
-
-    private int LeftOrRightPlane(int oldNum, int newNum)
-    {
-        //if left of the character, instantiate smallest to greatest <
-        if (oldNum < 0)
-        {
-            return oldNum + newNum;
-        }
-        //if right of the character, instantiate greatest to smallest >
-        else
-        {
-            return newNum - oldNum;
-        }
-        //resulting button map shape should look like <>
-    }
-
-    void InsantiateButton(Transform buttonMap, GameObject buttonPrefab, int xButtonPosition, int yButtonPosition)
-    {
-        var button = Instantiate(
-        buttonPrefab,
-        new Vector3(gameObject.transform.position.x + xButtonPosition, gameObject.transform.position.y + yButtonPosition, 2),
-        Quaternion.identity);
-
-        button.transform.SetParent(buttonMap.transform);
-
-    }
-
-    void CreateButtonsParent()
-    {
-        if (!GameObject.Find("Button Map"))
-        {
-            buttonMap = new GameObject("Button Map");
-        }
-    }
-
-    private void MoveCharacter()
-    {
         //moves player towards the y value of where you clicked
         gameObject.transform.position = Vector3.MoveTowards(transform.position, new Vector3
             (gameObject.transform.position.x, Mathf.RoundToInt(clickedPosition.y)), speed * Time.deltaTime);
@@ -171,7 +111,7 @@ public class CharacterMovement : MonoBehaviour
     void Update()
     {
         if (clicked) { tileColor.enabled = true; } else { tileColor.enabled = false; }
-        if (transform.position != SnapToGrid(clickedPosition)) { MoveCharacter(); }
+        if (transform.position != SnapToGrid(clickedPosition)) { StartCoroutine(MoveCharacter()); }
 
     }
 }

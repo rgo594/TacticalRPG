@@ -65,7 +65,6 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\ArrowKeyMovement.cs" />
     <Compile Include="Assets\Scripts\Button.cs" />
-    <Compile Include="Assets\Scripts\ButtonCollector.cs" />
     <Compile Include="Assets\Scripts\ButtonController.cs" />
     <Compile Include="Assets\Scripts\CharacterMovement.cs" />
     <Compile Include="Assets\Scripts\Obstacles.cs" />

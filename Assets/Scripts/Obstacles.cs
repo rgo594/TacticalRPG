@@ -8,17 +8,31 @@ public class Obstacles : MonoBehaviour
     [SerializeField] bool right = false;
 
     GameObject myObj;
+    ButtonController buttonController;
+
+    CharacterMovement character;
 
     // Start is called before the first frame update
     void Start()
     {
         myObj = gameObject;
+        buttonController = FindObjectOfType<ButtonController>();
     }
 
     // Update is called once per frame
     void Update()
     {
-       
+
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.GetComponent<Button>())
+        {
+            var obstacleCollider = myObj.GetComponent<BoxCollider2D>();
+            obstacleCollider.size = new Vector3(1, 6, 2);
+            Destroy(collision.gameObject);
+        }
     }
 
     private void OnTriggerStay2D(Collider2D collision)
@@ -34,22 +48,6 @@ public class Obstacles : MonoBehaviour
             {
                 right = true;
             }
-        }
-
-        if(collision.GetComponent<Button>())
-        {
-            var obstacleCollider = myObj.GetComponent<BoxCollider2D>();
-            obstacleCollider.size = new Vector3(1, 6, 2);
-            Destroy(collision.gameObject);
-            //StartCoroutine(DestroyButtons(collision.gameObject));
-/*            if (collision.transform.position == myObj.transform.position)
-            {
-                var obstacleCollider = myObj.GetComponent<BoxCollider2D>();
-                obstacleCollider.size = new Vector3(1, 6, 2);
-                StartCoroutine(DestroyButtons(collision.gameObject));
-                Debug.Log("works");
-                
-            }*/
         }
     }
 
