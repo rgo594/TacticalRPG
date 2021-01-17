@@ -19,23 +19,27 @@ public class CharacterMovement : MonoBehaviour
     GameObject preventClicking;
 
     SpriteRenderer tileColor;
+    BoxCollider2D boxCollider;
 
     private void Start()
     {
         preventClicking = GameObject.Find("PreventClicking");
         clickedPosition = gameObject.transform.position;
 
-        tileColor = gameObject.transform.GetChild(1).GetComponent<SpriteRenderer>();
+        //tileColor = gameObject.transform.GetChild(1).GetComponent<SpriteRenderer>();
 
         buttonController = FindObjectOfType<ButtonController>();
+        boxCollider = gameObject.GetComponent<BoxCollider2D>();
     }
 
     
     private void OnMouseDown()
     {
-        clicked = !clicked;
-        buttonController.SetCharacter(gameObject.GetComponent<CharacterMovement>());
-        
+        if (boxCollider.GetType() == typeof(BoxCollider2D))
+        {
+            clicked = !clicked;
+            buttonController.SetCharacter(gameObject.GetComponent<CharacterMovement>());
+
             if (clicked)
             {
                 buttonController.CreateButtonsParent();
@@ -45,6 +49,8 @@ public class CharacterMovement : MonoBehaviour
             {
                 buttonController.DestroyButtonMap();
             }
+        }
+        else if (boxCollider.GetType() == typeof(CircleCollider2D)) { Debug.Log("fuck unity"); }
     }
 
     public Vector3 SnapToGrid(Vector3 rawWorldPos)
@@ -108,9 +114,21 @@ public class CharacterMovement : MonoBehaviour
         }
     }
 
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.collider.GetType() == typeof(BoxCollider2D))
+        {
+            // do stuff only for the box collider
+        }
+        else if (collision.collider.GetType() == typeof(CircleCollider2D))
+        {
+            // do stuff only for the circle collider
+        }
+    }
+
     void Update()
     {
-        if (clicked) { tileColor.enabled = true; } else { tileColor.enabled = false; }
+        //if (clicked) { tileColor.enabled = true; } else { tileColor.enabled = false; }
         if (transform.position != SnapToGrid(clickedPosition)) { StartCoroutine(MoveCharacter()); }
 
     }
