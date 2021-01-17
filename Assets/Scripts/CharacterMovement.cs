@@ -21,12 +21,14 @@ public class CharacterMovement : MonoBehaviour
     SpriteRenderer tileColor;
     BoxCollider2D boxCollider;
 
+  
+
     private void Start()
     {
         preventClicking = GameObject.Find("PreventClicking");
         clickedPosition = gameObject.transform.position;
 
-        //tileColor = gameObject.transform.GetChild(1).GetComponent<SpriteRenderer>();
+        tileColor = gameObject.transform.GetChild(1).GetComponent<SpriteRenderer>();
 
         buttonController = FindObjectOfType<ButtonController>();
         boxCollider = gameObject.GetComponent<BoxCollider2D>();
@@ -42,8 +44,8 @@ public class CharacterMovement : MonoBehaviour
 
             if (clicked)
             {
-                buttonController.CreateButtonsParent();
-                buttonController.InstantiateButtonMap();
+                //buttonController.CreateButtonsParent();
+                StartCoroutine(buttonController.InstantiateButtonMap());
             }
             else
             {
@@ -111,18 +113,6 @@ public class CharacterMovement : MonoBehaviour
                 preventClicking.GetComponent<BoxCollider2D>().enabled = false;
                 moving = !moving;
             }
-        }
-    }
-
-    void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.collider.GetType() == typeof(BoxCollider2D))
-        {
-            // do stuff only for the box collider
-        }
-        else if (collision.collider.GetType() == typeof(CircleCollider2D))
-        {
-            // do stuff only for the circle collider
         }
     }
 

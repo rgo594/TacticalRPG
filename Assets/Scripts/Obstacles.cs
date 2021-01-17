@@ -25,15 +25,15 @@ public class Obstacles : MonoBehaviour
 
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.GetComponent<Button>())
+    /*    private void OnTriggerEnter2D(Collider2D collision)
         {
-            var obstacleCollider = myObj.GetComponent<BoxCollider2D>();
-            obstacleCollider.size = new Vector3(1, 6, 2);
-            Destroy(collision.gameObject);
-        }
-    }
+            if (collision.GetComponent<Button>())
+            {
+                var obstacleCollider = myObj.GetComponent<BoxCollider2D>();
+                obstacleCollider.size = new Vector3(1, 6, 2);
+                Destroy(collision.gameObject);
+            }
+        }*/
 
     private void OnTriggerStay2D(Collider2D collision)
     {
@@ -50,6 +50,14 @@ public class Obstacles : MonoBehaviour
             }
         }
     }
+
+/*    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.GetComponent<Button>())
+        {
+            Destroy(collision.gameObject);
+        }
+    }*/
 
     IEnumerator DestroyButtons(GameObject button)
     {
