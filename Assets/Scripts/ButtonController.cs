@@ -9,16 +9,13 @@ public class ButtonController : MonoBehaviour
     [SerializeField] CharacterMovement previousCharacter;
     [SerializeField] CharacterMovement character;
     [SerializeField] GameObject buttonPrefab;
-    //DetectObstacles detectObstacles;
     bool findObstacles = true;
 
-    public List<Obstacles> detectObstacles;
-    //bool hasElements = detectObstacles.Any();
-
+    public bool inRangeOfObs = false;
+   
     private void Start()
     {
-        detectObstacles = new List<Obstacles>(FindObjectsOfType<Obstacles>());
-        //bool hasElements = detectObstacles.Any(i => i.name == "somename"));
+
     }
 
     public void SetCharacter(CharacterMovement clickedCharacter)
@@ -33,7 +30,6 @@ public class ButtonController : MonoBehaviour
 
     public IEnumerator InstantiateButtonMap()
     {
-        //currently always true until obstacle logic is implemented
         yield return new WaitUntil(() => findObstacles == true);
         CreateButtonsParent();
 
@@ -42,39 +38,37 @@ public class ButtonController : MonoBehaviour
         {
             for (int buttonInstance = -LeftOrRightPlane(xStartPosition, character.movesAvailable); buttonInstance <= LeftOrRightPlane(xStartPosition, character.movesAvailable); buttonInstance++) //for (int buttonInstance = -yButtonRange; buttonInstance <= yButtonRange; buttonInstance++)
             {
-                //if (buttonInstance == 0 && xStartPosition == 0) { continue; }
-                //detectObstacles.Any(i => character.transform.position.x - i.transform.position.x == 0)
+                //TODO currently only works with one obstacle, implement an any statement on line 54
+                if(character.transform.GetChild(0).gameObject.GetComponent<DetectObstacles>().obstacles.Count > 0)
+                {
+                    var detectedObs = character.transform.GetChild(0).gameObject.GetComponent<DetectObstacles>().obstacles;
+                    int yMaxTileObsDist = 0;
+                    int xMaxTileObsDist = 0;
 
-
-                if (detectObstacles.Any(obstacle => xStartPosition == obstacle.transform.position.x 
-                    && character.transform.position.x == obstacle.transform.position.x 
-                    && ObstacleCondition((int)obstacle.transform.position.y, LeftOrRightPlane(xStartPosition, character.movesAvailable)) == buttonInstance))
-                { continue; }
+                    foreach(GameObject obstacle in detectedObs)
+                    {
+                        yMaxTileObsDist = LeftOrRightPlane((int)obstacle.transform.position.y, (int)character.transform.position.y);
+                        xMaxTileObsDist = LeftOrRightPlane((int)obstacle.transform.position.x, (int)character.transform.position.x);
+                    }
+                    //Debug.Log(yMaxTileObsDist);
+                    if (buttonInstance == -yMaxTileObsDist && -xMaxTileObsDist == xStartPosition) 
+                    {
+                        continue;
+                    }
+                }
 
                 InsantiateButton(character.buttonMap.transform, buttonPrefab, xStartPosition, buttonInstance);
 
             }
         }
     }
-    //ObstacleCondition((int)i.transform.position.y, LeftOrRightPlane(xStartPosition, character.movesAvailable)) == buttonInstance)
-    private int ObstacleCondition(int yObstacle, int yMax)
+
+    public int CalculateDistance(int x1, int x2, int y1, int y2)
     {
-        Debug.Log("ychar - yobs is less than moves available " + (Mathf.Abs(character.transform.position.y) - Mathf.Abs(yObstacle) > character.movesAvailable));
-        Debug.Log(yObstacle >= 0 && character.transform.position.y < 0);
-        if (Mathf.Abs(character.transform.position.y) - Mathf.Abs(yObstacle) < character.movesAvailable)
-        {
-            if (yObstacle >= 0 && character.transform.position.y < 0)
-            {
-            Debug.Log("above or equal" + (yMax - yObstacle));
-                return yMax - yObstacle;
-}
-           else
-            {
-            Debug.Log("below " + (yMax + yObstacle));
-            return yObstacle - yMax;
-            }
-        }
-        else { return 0;  }
+        var xDistance = LeftOrRightPlane(x1, x2);
+        var yDistance = LeftOrRightPlane(y1, y2);
+        return Mathf.Abs(xDistance) + Mathf.Abs(yDistance);
+        //return xDistance + yDistance;
     }
 
     private int LeftOrRightPlane(int oldNum, int newNum)
@@ -125,6 +119,7 @@ public class ButtonController : MonoBehaviour
 
     private void Update()
     {
+        //Debug.Log(character.name + detectObstacles);
         if (character && previousCharacter)
         {
             if (character.clicked == true)
@@ -136,40 +131,3 @@ public class ButtonController : MonoBehaviour
     }
 
 }
-
-/*if (detectObstacles.Any(i => character.transform.position.x - i.transform.position.x == 0))
-{
-
-}*/
-
-/*if (detectObstacles.Any(i => character.transform.position.x - i.transform.position.x == 0))
-{
-    int yeet = 500;
-    for (int i = 0; i < detectObstacles.Count; i++)
-    {
-        if (detectObstacles[i].transform.position.y + 1 == buttonInstance) { yeet = buttonInstance; }
-    }
-
-    if (yeet == buttonInstance) { continue; }
-    InsantiateButton(character.buttonMap.transform, buttonPrefab, xStartPosition, buttonInstance);
-}
-else
-{
-    InsantiateButton(character.buttonMap.transform, buttonPrefab, xStartPosition, buttonInstance);
-}*/
-
-/*bool coo = false;
-
-for (int obstacle = 0; obstacle < detectObstacles.Count; obstacle++)
-{
-    if (xStartPosition == detectObstacles[obstacle].transform.position.x && ObstacleCondition((int)detectObstacles[obstacle].transform.position.y, LeftOrRightPlane(xStartPosition, character.movesAvailable)) == buttonInstance)
-    {
-        coo = true;
-    }
-    else
-    {
-        coo = false;
-    }
-}
-
-if (coo) { continue; }*/

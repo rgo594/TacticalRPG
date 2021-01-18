@@ -37,6 +37,7 @@ public class CharacterMovement : MonoBehaviour
     
     private void OnMouseDown()
     {
+
         if (boxCollider.GetType() == typeof(BoxCollider2D))
         {
             clicked = !clicked;
@@ -112,6 +113,7 @@ public class CharacterMovement : MonoBehaviour
             {
                 preventClicking.GetComponent<BoxCollider2D>().enabled = false;
                 moving = !moving;
+                
             }
         }
     }
