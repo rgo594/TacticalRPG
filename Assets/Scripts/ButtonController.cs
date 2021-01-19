@@ -42,18 +42,37 @@ public class ButtonController : MonoBehaviour
                 if(character.transform.GetChild(0).gameObject.GetComponent<DetectObstacles>().obstacles.Count > 0)
                 {
                     var detectedObs = character.transform.GetChild(0).gameObject.GetComponent<DetectObstacles>().obstacles;
-                    int yMaxTileObsDist = 0;
-                    int xMaxTileObsDist = 0;
+                    List<Vector3> maxTileObsDist = new List<Vector3>();
 
-                    foreach(GameObject obstacle in detectedObs)
+                    foreach (GameObject obstacle in detectedObs)
                     {
-                        yMaxTileObsDist = LeftOrRightPlane((int)obstacle.transform.position.y, (int)character.transform.position.y);
-                        xMaxTileObsDist = LeftOrRightPlane((int)obstacle.transform.position.x, (int)character.transform.position.x);
+                        maxTileObsDist.Add(new Vector3(obstacle.transform.position.x - character.transform.position.x, obstacle.transform.position.y - character.transform.position.y, 2));
                     }
-                    //Debug.Log(yMaxTileObsDist);
-                    if (buttonInstance == -yMaxTileObsDist && -xMaxTileObsDist == xStartPosition) 
+
+       
+                    if (maxTileObsDist.Any(maxDist => maxDist == new Vector3(xStartPosition, buttonInstance, 2)))
                     {
                         continue;
+                    }
+
+                    int dist = CalculateDistance((int)detectedObs[0].transform.position.x, (int)character.transform.position.x, (int)detectedObs[0].transform.position.y, (int)character.transform.position.y);
+
+                    if (character.transform.position.x == detectedObs[0].transform.position.x && dist < character.movesAvailable)
+                    {
+                        if (character.transform.position.y > detectedObs[0].transform.position.y)
+                        {
+                            if (buttonInstance == -character.movesAvailable)
+                            {
+                                continue;
+                            }
+                        }
+                        else
+                        {
+                            if (buttonInstance == character.movesAvailable)
+                            {
+                                continue;
+                            }
+                        }
                     }
                 }
 
