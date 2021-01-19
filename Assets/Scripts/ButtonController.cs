@@ -48,31 +48,39 @@ public class ButtonController : MonoBehaviour
                     {
                         maxTileObsDist.Add(new Vector3(obstacle.transform.position.x - character.transform.position.x, obstacle.transform.position.y - character.transform.position.y, 2));
                     }
-
        
                     if (maxTileObsDist.Any(maxDist => maxDist == new Vector3(xStartPosition, buttonInstance, 2)))
                     {
                         continue;
                     }
 
-                    int dist = CalculateDistance((int)detectedObs[0].transform.position.x, (int)character.transform.position.x, (int)detectedObs[0].transform.position.y, (int)character.transform.position.y);
+                    bool skipMaxTile = false;
 
-                    if (character.transform.position.x == detectedObs[0].transform.position.x && dist < character.movesAvailable)
+                    foreach(GameObject obstacle in detectedObs)
                     {
-                        if (character.transform.position.y > detectedObs[0].transform.position.y)
+                        if (character.transform.position.x == obstacle.transform.position.x)
                         {
-                            if (buttonInstance == -character.movesAvailable)
+                            if(character.transform.position.y > obstacle.transform.position.y)
                             {
-                                continue;
+                                if (buttonInstance == -character.movesAvailable)
+                                {
+                                    skipMaxTile = true;
+                                }
+                            }
+                            else
+                            {
+                                if (buttonInstance == character.movesAvailable)
+                                {
+                                    skipMaxTile = true;
+                                }
                             }
                         }
-                        else
-                        {
-                            if (buttonInstance == character.movesAvailable)
-                            {
-                                continue;
-                            }
-                        }
+                    }
+
+                    if(skipMaxTile)
+                    {
+                        skipMaxTile = false;
+                        continue;
                     }
                 }
 
@@ -84,8 +92,10 @@ public class ButtonController : MonoBehaviour
 
     public int CalculateDistance(int x1, int x2, int y1, int y2)
     {
-        var xDistance = LeftOrRightPlane(x1, x2);
-        var yDistance = LeftOrRightPlane(y1, y2);
+/*        var xDistance = LeftOrRightPlane(x1, x2);
+        var yDistance = LeftOrRightPlane(y1, y2); */       
+        var xDistance = x1 - x2;
+        var yDistance = y1 - y2;
         return Mathf.Abs(xDistance) + Mathf.Abs(yDistance);
         //return xDistance + yDistance;
     }
