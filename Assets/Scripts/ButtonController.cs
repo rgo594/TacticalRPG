@@ -98,7 +98,7 @@ public class ButtonController : MonoBehaviour
         //starts movesAvailable buttons left of the character, and iterates until movesAvailable buttons right of the character
         for (int xStartPosition = -(character.movesAvailable); xStartPosition <= character.movesAvailable; xStartPosition++)
         {
-            int lastButtonInstance = -LeftOrRightPlane(xStartPosition, character.movesAvailable) + 1;
+            int lastButtonInstance = -LeftOrRightPlane(xStartPosition, character.movesAvailable);
             Debug.Log(lastButtonInstance);
             //for each iteration of the first for loop, start a second for loop which instantiates buttons in a vertical column starting at the negative difference between the xStartPosition and movesAvailable and finishes iteration at the positive difference
             //(Example: xStart = -2, movesAvailable = 4 ; 4 + -2 = 2 ; instantiate five buttons starting at the -2 y position and -2 x position and finish iterating until the 2 y position.)
@@ -136,11 +136,12 @@ public class ButtonController : MonoBehaviour
 
                     bool mur = false;
 
-                    for (int i = buttonInstance; i < -3; i++)
+                    for (int i = buttonInstance; i < lastButtonInstance + 2; i++)
                     {
                         if (xStartPosition > -1 && lastButtonInstance < i)
                         {
                             mur = true;
+                            //Debug.Log(lastButtonInstance);
                         }
                         else
                         {
