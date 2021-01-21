@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Obstacles : MonoBehaviour
 {
-    [SerializeField] bool left = false;
-    [SerializeField] bool right = false;
+    public bool left = false;
+    public bool right = false;
 
     GameObject myObj;
     ButtonController buttonController;

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class DetectObstacles : MonoBehaviour
 {
-    public List<GameObject> obstacles;
+    public List<Obstacles> obstacles;
     CharacterMovement characterMovement;
     ButtonController buttonController;
 
@@ -18,15 +18,15 @@ public class DetectObstacles : MonoBehaviour
     {
         if (collision.GetComponent<Obstacles>())
         {
-            obstacles.Add(collision.gameObject);
+            obstacles.Add(collision.GetComponent<Obstacles>());
         }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        foreach(GameObject obstacle in obstacles)
+        foreach(Obstacles obstacle in obstacles)
         {
-            if (collision.gameObject == obstacle)
+            if (collision.GetComponent<Obstacles>() == obstacle)
             {
                 obstacles.Remove(obstacle);
             }

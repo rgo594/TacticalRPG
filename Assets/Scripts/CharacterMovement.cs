@@ -21,10 +21,12 @@ public class CharacterMovement : MonoBehaviour
     SpriteRenderer tileColor;
     BoxCollider2D boxCollider;
 
-  
+    Vector3 testAvail;
+    Vector3 originalPosition;
 
     private void Start()
     {
+        originalPosition = gameObject.transform.position;
         preventClicking = GameObject.Find("PreventClicking");
         clickedPosition = gameObject.transform.position;
 
@@ -45,7 +47,6 @@ public class CharacterMovement : MonoBehaviour
 
             if (clicked)
             {
-                //buttonController.CreateButtonsParent();
                 StartCoroutine(buttonController.InstantiateButtonMap());
             }
             else
@@ -118,10 +119,23 @@ public class CharacterMovement : MonoBehaviour
         }
     }
 
+/*    IEnumerator WhenPosIsClickedPos()
+    {
+        testAvail -= 1;
+        yield return new WaitWhile(() => gameObject.transform.position != clickedPosition);
+    }*/
+
     void Update()
     {
-        //if (clicked) { tileColor.enabled = true; } else { tileColor.enabled = false; }
+        if (clicked) { tileColor.enabled = true; } else { tileColor.enabled = false; }
         if (transform.position != SnapToGrid(clickedPosition)) { StartCoroutine(MoveCharacter()); }
 
+
+        //Debug.Log(Vector3.Distance(SnapToGrid(clickedPosition), SnapToGrid(gameObject.transform.position)));
+        //Debug.Log(Vector3.Distance(SnapToGrid(new Vector3(clickedPosition.x, 0)), SnapToGrid(new Vector3(gameObject.transform.position.x, 0))));
+        Debug.Log(Vector3.Distance(SnapToGrid(new Vector3(0, clickedPosition.y)), SnapToGrid(new Vector3(0, gameObject.transform.position.y))));
     }
+       
 }
+
+//Debug.Log(Vector3.Distance(SnapToGrid(clickedPosition), SnapToGrid(gameObject.transform.position)));

@@ -13,6 +13,11 @@ public class ButtonController : MonoBehaviour
 
     public bool inRangeOfObs = false;
 
+/*    Obstacles leftObs;
+    Obstacles rightObs;*/
+
+    int leftOfLeft = 0;
+
     public void SetCharacter(CharacterMovement clickedCharacter)
     {
         if (clickedCharacter != character)
@@ -54,25 +59,60 @@ public class ButtonController : MonoBehaviour
 
     }
 
+    private Obstacles LeftObs()
+    {
+        var detectedObs = character.transform.GetChild(0).gameObject.GetComponent<DetectObstacles>().obstacles;
+
+        foreach (Obstacles obstacle in detectedObs)
+        {
+            if (obstacle.left != true && obstacle.right == true)
+            {
+                return obstacle;
+            }
+        }
+        return new Obstacles();
+
+    }   
+    private Obstacles RightObs()
+    {
+        var detectedObs = character.transform.GetChild(0).gameObject.GetComponent<DetectObstacles>().obstacles;
+
+        foreach (Obstacles obstacle in detectedObs)
+        {
+            if (obstacle.left == true && obstacle.right != true)
+            {
+                return obstacle;
+            }
+        }
+        return new Obstacles();
+    }
+
     public IEnumerator InstantiateButtonMap()
     {
+        Obstacles leftObs = LeftObs();
+        Obstacles rightObs = RightObs();
+
         yield return new WaitUntil(() => findObstacles == true);
         CreateButtonsParent();
 
         //starts movesAvailable buttons left of the character, and iterates until movesAvailable buttons right of the character
         for (int xStartPosition = -(character.movesAvailable); xStartPosition <= character.movesAvailable; xStartPosition++)
         {
+            int lastButtonInstance = -LeftOrRightPlane(xStartPosition, character.movesAvailable) + 1;
+            Debug.Log(lastButtonInstance);
             //for each iteration of the first for loop, start a second for loop which instantiates buttons in a vertical column starting at the negative difference between the xStartPosition and movesAvailable and finishes iteration at the positive difference
             //(Example: xStart = -2, movesAvailable = 4 ; 4 + -2 = 2 ; instantiate five buttons starting at the -2 y position and -2 x position and finish iterating until the 2 y position.)
             for (int buttonInstance = -LeftOrRightPlane(xStartPosition, character.movesAvailable); buttonInstance <= LeftOrRightPlane(xStartPosition, character.movesAvailable); buttonInstance++)
             {
-                if(character.transform.GetChild(0).gameObject.GetComponent<DetectObstacles>().obstacles.Count > 0)
+                if (character.transform.GetChild(0).gameObject.GetComponent<DetectObstacles>().obstacles.Count > 0)
                 {
+                    Debug.Log(lastButtonInstance);
                     var detectedObs = character.transform.GetChild(0).gameObject.GetComponent<DetectObstacles>().obstacles;
+
                     List<Vector3> maxButtonDist = new List<Vector3>();
                     bool skipMaxButton = false;
 
-                    foreach (GameObject obstacle in detectedObs)
+                    foreach (Obstacles obstacle in detectedObs)
                     {
                         maxButtonDist.Add(new Vector3(obstacle.transform.position.x - character.transform.position.x, obstacle.transform.position.y - character.transform.position.y, 2));
                     }
@@ -84,23 +124,58 @@ public class ButtonController : MonoBehaviour
                         continue;
                     }
 
-                    //if an obstacle is on the same x as the character, don't instantiate the farthest button away
-                    skipMaxButton = CheckYObstaclePosition(buttonInstance, detectedObs, skipMaxButton);
+                    //if an obstacle is on the same x or y coordinate as the character, don't instantiate the farthest button away on the opposite coordinate (same x, y button column has one less, same y, x row has one less button)
+                    skipMaxButton = CheckYObstaclePosition(buttonInstance, detectedObs, skipMaxButton, xStartPosition);
 
                     if (skipMaxButton)
                     {
                         skipMaxButton = false;
                         continue;
                     }
+
+
+                    bool mur = false;
+
+                    for (int i = buttonInstance; i < -3; i++)
+                    {
+                        if (xStartPosition > -1 && lastButtonInstance < i)
+                        {
+                            mur = true;
+                        }
+                        else
+                        {
+                            mur = false;
+                        }
+                    }
+
+                    if (mur)
+                    {
+                        continue;
+                    }
+
+                    //int coo;
+
+                    //int coo = something(leftObs, rightObs, xStartPosition, buttonInstance);
+                    /*
+                                        if (buttonInstance > coo)
+                                        {
+                                            continue;
+                                        }*/
+
                 }
+                if (xStartPosition == 0 && buttonInstance == 0)
+                {
+                    continue;
+                }
+
                 InsantiateButton(character.buttonMap.transform, buttonPrefab, xStartPosition, buttonInstance);
             }
         }
     }
 
-    private bool CheckYObstaclePosition(int buttonInstance, List<GameObject> detectedObs, bool skipMaxTile)
+    private bool CheckYObstaclePosition(int buttonInstance, List<Obstacles> detectedObs, bool skipMaxTile, int xStartPosition)
     {
-        foreach (GameObject obstacle in detectedObs)
+        foreach (Obstacles obstacle in detectedObs)
         {
             if (character.transform.position.x == obstacle.transform.position.x)
             {
@@ -114,6 +189,23 @@ public class ButtonController : MonoBehaviour
                 else
                 {
                     if (buttonInstance == character.movesAvailable)
+                    {
+                        skipMaxTile = true;
+                    }
+                }
+            }
+            else if (character.transform.position.y == obstacle.transform.position.y)
+            {
+                if (character.transform.position.x > obstacle.transform.position.x)
+                {
+                    if (xStartPosition == -character.movesAvailable)
+                    {
+                        skipMaxTile = true;
+                    }
+                }
+                else
+                {
+                    if (xStartPosition == character.movesAvailable)
                     {
                         skipMaxTile = true;
                     }
@@ -159,3 +251,42 @@ public class ButtonController : MonoBehaviour
     }
 
 }
+
+
+
+/*bool mur = false;
+
+for (int i = -4; i < 0; i++)
+{
+    if (xStartPosition > -1 && buttonInstance < i)
+    {
+        mur = true;
+    }
+    else
+    {
+        mur = false;
+    }
+}
+
+if (mur)
+{
+    continue;
+}
+
+
+private int something(Obstacles leftObs, Obstacles rightObs, int xStartPosition, int buttonInstance)
+{
+    if (leftObs.transform.position.x - character.transform.position.x > character.transform.position.x - rightObs.transform.position.x)
+    {
+        if (xStartPosition == leftObs.transform.position.x - 1)
+        {
+            return buttonInstance;
+        }
+    }
+    else
+    {
+        Debug.Log("right");
+    }
+
+    return 1000;
+}*/
