@@ -133,7 +133,7 @@ public class CharacterMovement : MonoBehaviour
 
         //Debug.Log(Vector3.Distance(SnapToGrid(clickedPosition), SnapToGrid(gameObject.transform.position)));
         //Debug.Log(Vector3.Distance(SnapToGrid(new Vector3(clickedPosition.x, 0)), SnapToGrid(new Vector3(gameObject.transform.position.x, 0))));
-        Debug.Log(Vector3.Distance(SnapToGrid(new Vector3(0, clickedPosition.y)), SnapToGrid(new Vector3(0, gameObject.transform.position.y))));
+        //Debug.Log(Vector3.Distance(SnapToGrid(new Vector3(0, clickedPosition.y)), SnapToGrid(new Vector3(0, gameObject.transform.position.y))));
     }
        
 }

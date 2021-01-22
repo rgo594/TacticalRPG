@@ -99,14 +99,13 @@ public class ButtonController : MonoBehaviour
         for (int xStartPosition = -(character.movesAvailable); xStartPosition <= character.movesAvailable; xStartPosition++)
         {
             int lastButtonInstance = -LeftOrRightPlane(xStartPosition, character.movesAvailable);
-            Debug.Log(lastButtonInstance);
+
             //for each iteration of the first for loop, start a second for loop which instantiates buttons in a vertical column starting at the negative difference between the xStartPosition and movesAvailable and finishes iteration at the positive difference
             //(Example: xStart = -2, movesAvailable = 4 ; 4 + -2 = 2 ; instantiate five buttons starting at the -2 y position and -2 x position and finish iterating until the 2 y position.)
             for (int buttonInstance = -LeftOrRightPlane(xStartPosition, character.movesAvailable); buttonInstance <= LeftOrRightPlane(xStartPosition, character.movesAvailable); buttonInstance++)
             {
                 if (character.transform.GetChild(0).gameObject.GetComponent<DetectObstacles>().obstacles.Count > 0)
                 {
-                    Debug.Log(lastButtonInstance);
                     var detectedObs = character.transform.GetChild(0).gameObject.GetComponent<DetectObstacles>().obstacles;
 
                     List<Vector3> maxButtonDist = new List<Vector3>();
@@ -134,13 +133,15 @@ public class ButtonController : MonoBehaviour
                     }
 
 
+
                     bool mur = false;
 
                     for (int i = buttonInstance; i < lastButtonInstance + 2; i++)
                     {
                         if (xStartPosition > -1 && lastButtonInstance < i)
                         {
-                            mur = true;
+                            buttonInstance = lastButtonInstance + 2;
+                            //mur = true;
                             //Debug.Log(lastButtonInstance);
                         }
                         else
