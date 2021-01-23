@@ -41,7 +41,7 @@ public class ButtonController : MonoBehaviour
             return newNum - oldNum;
         }
         //resulting button map shape should look like <>
-    }
+    }    
 
     public void CreateButtonsParent()
     {
@@ -58,7 +58,7 @@ public class ButtonController : MonoBehaviour
         button.transform.SetParent(buttonMap.transform);
 
     }
-
+/*
     private Obstacles LeftObs()
     {
         var detectedObs = character.transform.GetChild(0).gameObject.GetComponent<DetectObstacles>().obstacles;
@@ -86,25 +86,57 @@ public class ButtonController : MonoBehaviour
         }
         return new Obstacles();
     }
-
+*/
     public IEnumerator InstantiateButtonMap()
     {
-        Obstacles leftObs = LeftObs();
-        Obstacles rightObs = RightObs();
 
         yield return new WaitUntil(() => findObstacles == true);
+        //var detectedObs = character.transform.GetChild(0).gameObject.GetComponent<DetectObstacles>().obstacles;
+
+        List<Obstacles> detectedObstacles;
+        int revisedMaxYBI;
+        int xObstacleCharacterDistance;
+        bool obstaclesPresent;
+
+        if (character.transform.GetChild(0).gameObject.GetComponent<DetectObstacles>().obstacles.Count > 0)
+        {
+            obstaclesPresent = true;
+            detectedObstacles = character.transform.GetChild(0).gameObject.GetComponent<DetectObstacles>().obstacles;
+            xObstacleCharacterDistance = (int)Vector3.Distance(new Vector3(character.transform.position.x, 0), new Vector3(detectedObstacles[4].transform.position.x, 0));
+            revisedMaxYBI = character.movesAvailable - ((int)Vector3.Distance(new Vector3(character.transform.position.x, 0), new Vector3(detectedObstacles[4].transform.position.x, 0)));
+            Debug.Log(revisedMaxYBI);
+        }
+        else
+        {
+            xObstacleCharacterDistance = 0;
+            obstaclesPresent = false;
+            detectedObstacles = null;
+            revisedMaxYBI = 0;
+        }
+
+        //int revisedMaxYBI = character.movesAvailable - ((int)Vector3.Distance(new Vector3(character.transform.position.x, 0), new Vector3(coo[4].transform.position.x, 0)));
+
         CreateButtonsParent();
 
         //starts movesAvailable buttons left of the character, and iterates until movesAvailable buttons right of the character
         for (int xStartPosition = -(character.movesAvailable); xStartPosition <= character.movesAvailable; xStartPosition++)
         {
-            int lastButtonInstance = -LeftOrRightPlane(xStartPosition, character.movesAvailable);
+            int lastButtonInstance = LeftOrRightPlane(xStartPosition, character.movesAvailable) - 1;
+
+            if(obstaclesPresent)
+            {
+                if (xStartPosition + xObstacleCharacterDistance > detectedObstacles[4].transform.position.x - 1)
+                {
+                    revisedMaxYBI = revisedMaxYBI - 1;
+                }
+            }
 
             //for each iteration of the first for loop, start a second for loop which instantiates buttons in a vertical column starting at the negative difference between the xStartPosition and movesAvailable and finishes iteration at the positive difference
             //(Example: xStart = -2, movesAvailable = 4 ; 4 + -2 = 2 ; instantiate five buttons starting at the -2 y position and -2 x position and finish iterating until the 2 y position.)
             for (int buttonInstance = -LeftOrRightPlane(xStartPosition, character.movesAvailable); buttonInstance <= LeftOrRightPlane(xStartPosition, character.movesAvailable); buttonInstance++)
             {
-                if (character.transform.GetChild(0).gameObject.GetComponent<DetectObstacles>().obstacles.Count > 0)
+
+                if (obstaclesPresent)
                 {
                     var detectedObs = character.transform.GetChild(0).gameObject.GetComponent<DetectObstacles>().obstacles;
 
@@ -115,7 +147,6 @@ public class ButtonController : MonoBehaviour
                     {
                         maxButtonDist.Add(new Vector3(obstacle.transform.position.x - character.transform.position.x, obstacle.transform.position.y - character.transform.position.y, 2));
                     }
-
 
                     //don't instantiate buttons that have the same position as obstacles
                     if (maxButtonDist.Any(maxDist => maxDist == new Vector3(xStartPosition, buttonInstance, 2)))
@@ -132,39 +163,12 @@ public class ButtonController : MonoBehaviour
                         continue;
                     }
 
-
-
-                    bool mur = false;
-
-                    for (int i = buttonInstance; i < lastButtonInstance + 2; i++)
-                    {
-                        if (xStartPosition > -1 && lastButtonInstance < i)
-                        {
-                            buttonInstance = lastButtonInstance + 2;
-                            //mur = true;
-                            //Debug.Log(lastButtonInstance);
-                        }
-                        else
-                        {
-                            mur = false;
-                        }
-                    }
-
-                    if (mur)
-                    {
+                    if (buttonInstance <= -revisedMaxYBI)
+                    {                        
                         continue;
                     }
-
-                    //int coo;
-
-                    //int coo = something(leftObs, rightObs, xStartPosition, buttonInstance);
-                    /*
-                                        if (buttonInstance > coo)
-                                        {
-                                            continue;
-                                        }*/
-
                 }
+
                 if (xStartPosition == 0 && buttonInstance == 0)
                 {
                     continue;
@@ -214,7 +218,6 @@ public class ButtonController : MonoBehaviour
                 }
             }
         }
-
         return skipMaxTile;
     }
 
@@ -253,42 +256,3 @@ public class ButtonController : MonoBehaviour
     }
 
 }
-
-
-
-/*bool mur = false;
-
-for (int i = -4; i < 0; i++)
-{
-    if (xStartPosition > -1 && buttonInstance < i)
-    {
-        mur = true;
-    }
-    else
-    {
-        mur = false;
-    }
-}
-
-if (mur)
-{
-    continue;
-}
-
-
-private int something(Obstacles leftObs, Obstacles rightObs, int xStartPosition, int buttonInstance)
-{
-    if (leftObs.transform.position.x - character.transform.position.x > character.transform.position.x - rightObs.transform.position.x)
-    {
-        if (xStartPosition == leftObs.transform.position.x - 1)
-        {
-            return buttonInstance;
-        }
-    }
-    else
-    {
-        Debug.Log("right");
-    }
-
-    return 1000;
-}*/

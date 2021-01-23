@@ -129,13 +129,7 @@ public class CharacterMovement : MonoBehaviour
     {
         if (clicked) { tileColor.enabled = true; } else { tileColor.enabled = false; }
         if (transform.position != SnapToGrid(clickedPosition)) { StartCoroutine(MoveCharacter()); }
-
-
-        //Debug.Log(Vector3.Distance(SnapToGrid(clickedPosition), SnapToGrid(gameObject.transform.position)));
-        //Debug.Log(Vector3.Distance(SnapToGrid(new Vector3(clickedPosition.x, 0)), SnapToGrid(new Vector3(gameObject.transform.position.x, 0))));
-        //Debug.Log(Vector3.Distance(SnapToGrid(new Vector3(0, clickedPosition.y)), SnapToGrid(new Vector3(0, gameObject.transform.position.y))));
     }
        
 }
 
-//Debug.Log(Vector3.Distance(SnapToGrid(clickedPosition), SnapToGrid(gameObject.transform.position)));
