@@ -268,8 +268,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 791e9b46a8aa9f44690e9b8ce2f7b349, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  obsBelow: 0
-  obsSides: 0
 --- !u!1 &616403292
 GameObject:
   m_ObjectHideFlags: 0
@@ -1298,12 +1296,12 @@ PrefabInstance:
     - target: {fileID: 468308859938679900, guid: 52a8c38e19443af4f8877ca8c7b5ed44,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 468308859938679900, guid: 52a8c38e19443af4f8877ca8c7b5ed44,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 468308859938679900, guid: 52a8c38e19443af4f8877ca8c7b5ed44,
         type: 3}

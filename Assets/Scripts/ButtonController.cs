@@ -13,11 +13,6 @@ public class ButtonController : MonoBehaviour
 
     public bool inRangeOfObs = false;
 
-/*    Obstacles leftObs;
-    Obstacles rightObs;*/
-
-    int leftOfLeft = 0;
-
     public void SetCharacter(CharacterMovement clickedCharacter)
     {
         if (clickedCharacter != character)
@@ -58,35 +53,7 @@ public class ButtonController : MonoBehaviour
         button.transform.SetParent(buttonMap.transform);
 
     }
-/*
-    private Obstacles LeftObs()
-    {
-        var detectedObs = character.transform.GetChild(0).gameObject.GetComponent<DetectObstacles>().obstacles;
 
-        foreach (Obstacles obstacle in detectedObs)
-        {
-            if (obstacle.left != true && obstacle.right == true)
-            {
-                return obstacle;
-            }
-        }
-        return new Obstacles();
-
-    }   
-    private Obstacles RightObs()
-    {
-        var detectedObs = character.transform.GetChild(0).gameObject.GetComponent<DetectObstacles>().obstacles;
-
-        foreach (Obstacles obstacle in detectedObs)
-        {
-            if (obstacle.left == true && obstacle.right != true)
-            {
-                return obstacle;
-            }
-        }
-        return new Obstacles();
-    }
-*/
     public IEnumerator InstantiateButtonMap()
     {
 
@@ -94,25 +61,14 @@ public class ButtonController : MonoBehaviour
         //var detectedObs = character.transform.GetChild(0).gameObject.GetComponent<DetectObstacles>().obstacles;
 
         List<Obstacles> detectedObstacles;
-        int revisedMaxYBI;
+
+        //When obstacles are blocking, the button instance range will start at this number
+        int revisedButtonInstanceStartPosition;
+
         int xObstacleCharacterDistance;
         bool obstaclesPresent;
 
-        if (character.transform.GetChild(0).gameObject.GetComponent<DetectObstacles>().obstacles.Count > 0)
-        {
-            obstaclesPresent = true;
-            detectedObstacles = character.transform.GetChild(0).gameObject.GetComponent<DetectObstacles>().obstacles;
-            xObstacleCharacterDistance = (int)Vector3.Distance(new Vector3(character.transform.position.x, 0), new Vector3(detectedObstacles[4].transform.position.x, 0));
-            revisedMaxYBI = character.movesAvailable - ((int)Vector3.Distance(new Vector3(character.transform.position.x, 0), new Vector3(detectedObstacles[4].transform.position.x, 0)));
-            Debug.Log(revisedMaxYBI);
-        }
-        else
-        {
-            xObstacleCharacterDistance = 0;
-            obstaclesPresent = false;
-            detectedObstacles = null;
-            revisedMaxYBI = 0;
-        }
+        SetObstacleVariables(out detectedObstacles, out revisedButtonInstanceStartPosition, out xObstacleCharacterDistance, out obstaclesPresent);
 
         //int revisedMaxYBI = character.movesAvailable - ((int)Vector3.Distance(new Vector3(character.transform.position.x, 0), new Vector3(coo[4].transform.position.x, 0)));
 
@@ -121,13 +77,16 @@ public class ButtonController : MonoBehaviour
         //starts movesAvailable buttons left of the character, and iterates until movesAvailable buttons right of the character
         for (int xStartPosition = -(character.movesAvailable); xStartPosition <= character.movesAvailable; xStartPosition++)
         {
-            int lastButtonInstance = LeftOrRightPlane(xStartPosition, character.movesAvailable) - 1;
-
-            if(obstaclesPresent)
+            if (obstaclesPresent)
             {
+                //The difference between xStartPosition and xObstacleCharacterDistance offsets the xStartPosition x value to line up with the starting obstacle's x value in the obstacle row
                 if (xStartPosition + xObstacleCharacterDistance > detectedObstacles[4].transform.position.x - 1)
                 {
-                    revisedMaxYBI = revisedMaxYBI - 1;
+                    //The revisedButtonInstanceStartPosition, is calculated by subtracting movesAvailable(Maximum buttonInstance value) by the distance between the starting obstacle and the characters x values
+                    //line 129 then stops instantiation if the current buttonInstance is less than or equal to the -revisedButtonInstanceStartPosition (if the obstacle row was above the character it would be greater than and positive revisedButtonInstanceStartPosition)
+                    //then for each subsequent x position along the obstacle row, buttonInstance starts 1 greater than the previous button column 
+                    //Example: distance between character and obstacle = 2; movesAvailable = 6; revisedButtonInstanceStartPosition = 6 - 2; buttonInstance = -6; if (buttonInstance <= -revisedButtonInstanceStartPosition) stop button instantiation
+                    revisedButtonInstanceStartPosition--;
                 }
             }
 
@@ -135,13 +94,12 @@ public class ButtonController : MonoBehaviour
             //(Example: xStart = -2, movesAvailable = 4 ; 4 + -2 = 2 ; instantiate five buttons starting at the -2 y position and -2 x position and finish iterating until the 2 y position.)
             for (int buttonInstance = -LeftOrRightPlane(xStartPosition, character.movesAvailable); buttonInstance <= LeftOrRightPlane(xStartPosition, character.movesAvailable); buttonInstance++)
             {
-
                 if (obstaclesPresent)
                 {
                     var detectedObs = character.transform.GetChild(0).gameObject.GetComponent<DetectObstacles>().obstacles;
 
                     List<Vector3> maxButtonDist = new List<Vector3>();
-                    bool skipMaxButton = false;
+                    bool singleObstacleButtonAbortions = false;
 
                     foreach (Obstacles obstacle in detectedObs)
                     {
@@ -155,16 +113,16 @@ public class ButtonController : MonoBehaviour
                     }
 
                     //if an obstacle is on the same x or y coordinate as the character, don't instantiate the farthest button away on the opposite coordinate (same x, y button column has one less, same y, x row has one less button)
-                    skipMaxButton = CheckYObstaclePosition(buttonInstance, detectedObs, skipMaxButton, xStartPosition);
+                    singleObstacleButtonAbortions = SingleObstacleButtonAbortion(buttonInstance, detectedObs, singleObstacleButtonAbortions, xStartPosition);
 
-                    if (skipMaxButton)
+                    if (singleObstacleButtonAbortions)
                     {
-                        skipMaxButton = false;
+                        singleObstacleButtonAbortions = false;
                         continue;
                     }
 
-                    if (buttonInstance <= -revisedMaxYBI)
-                    {                        
+                    if (buttonInstance <= -revisedButtonInstanceStartPosition)
+                    {
                         continue;
                     }
                 }
@@ -179,7 +137,31 @@ public class ButtonController : MonoBehaviour
         }
     }
 
-    private bool CheckYObstaclePosition(int buttonInstance, List<Obstacles> detectedObs, bool skipMaxTile, int xStartPosition)
+    private void SetObstacleVariables(out List<Obstacles> detectedObstacles, out int revisedButtonInstanceStartPosition, out int xObstacleCharacterDistance, out bool obstaclesPresent)
+    {
+        if (character.transform.GetChild(0).gameObject.GetComponent<DetectObstacles>().obstacles.Count > 0)
+        {
+            obstaclesPresent = true;
+            detectedObstacles = character.transform.GetChild(0).gameObject.GetComponent<DetectObstacles>().obstacles;
+
+            xObstacleCharacterDistance = (int)Vector3.Distance
+                (new Vector3(character.transform.position.x, 0),
+                new Vector3(detectedObstacles[4].transform.position.x, 0));
+
+            
+            revisedButtonInstanceStartPosition = character.movesAvailable - xObstacleCharacterDistance  ;
+        }
+        else
+        {
+            obstaclesPresent = false;
+            detectedObstacles = null;
+
+            xObstacleCharacterDistance = 0;
+            revisedButtonInstanceStartPosition = 0;
+        }
+    }
+
+    private bool SingleObstacleButtonAbortion(int buttonInstance, List<Obstacles> detectedObs, bool skipMaxTile, int xStartPosition)
     {
         foreach (Obstacles obstacle in detectedObs)
         {
@@ -221,12 +203,6 @@ public class ButtonController : MonoBehaviour
         return skipMaxTile;
     }
 
-    public int CalculateDistance(int x1, int x2, int y1, int y2)
-    {
-        var xDistance = LeftOrRightPlane(x1, x2);
-        var yDistance = LeftOrRightPlane(y1, y2);
-        return Mathf.Abs(xDistance) + Mathf.Abs(yDistance);
-    }
 
     public void TargetPosition()
     {
