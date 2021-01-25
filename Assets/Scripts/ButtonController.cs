@@ -62,22 +62,27 @@ public class ButtonController : MonoBehaviour
 
         List<Obstacles> detectedObstacles;
 
+        List<Obstacles> obstacleRow;
+
         //When obstacles are blocking, the button instance range will start at this number
-        int revisedButtonInstanceStartPosition;
+        int negRevisedButtonInstanceStartPosition;
 
         int xObstacleCharacterDistance;
         bool obstaclesPresent;
+        bool obstacleRowBlockingPath = false;
 
-        SetObstacleVariables(out detectedObstacles, out revisedButtonInstanceStartPosition, out xObstacleCharacterDistance, out obstaclesPresent);
-
-        //int revisedMaxYBI = character.movesAvailable - ((int)Vector3.Distance(new Vector3(character.transform.position.x, 0), new Vector3(coo[4].transform.position.x, 0)));
-
+        SetObstacleVariables(out detectedObstacles, out negRevisedButtonInstanceStartPosition, out xObstacleCharacterDistance, out obstaclesPresent);
         CreateButtonsParent();
+
+        if(detectedObstacles.Any(obstacle => obstacle.transform.position.x == character.transform.position.x)) 
+        { obstacleRowBlockingPath = true; } 
+        else
+        { obstacleRowBlockingPath = false; }
 
         //starts movesAvailable buttons left of the character, and iterates until movesAvailable buttons right of the character
         for (int xStartPosition = -(character.movesAvailable); xStartPosition <= character.movesAvailable; xStartPosition++)
         {
-            if (obstaclesPresent)
+            if (obstaclesPresent && obstacleRowBlockingPath)
             {
                 //The difference between xStartPosition and xObstacleCharacterDistance offsets the xStartPosition x value to line up with the starting obstacle's x value in the obstacle row
                 if (xStartPosition + xObstacleCharacterDistance > detectedObstacles[4].transform.position.x - 1)
@@ -86,7 +91,7 @@ public class ButtonController : MonoBehaviour
                     //line 129 then stops instantiation if the current buttonInstance is less than or equal to the -revisedButtonInstanceStartPosition (if the obstacle row was above the character it would be greater than and positive revisedButtonInstanceStartPosition)
                     //then for each subsequent x position along the obstacle row, buttonInstance starts 1 greater than the previous button column 
                     //Example: distance between character and obstacle = 2; movesAvailable = 6; revisedButtonInstanceStartPosition = 6 - 2; buttonInstance = -6; if (buttonInstance <= -revisedButtonInstanceStartPosition) stop button instantiation
-                    revisedButtonInstanceStartPosition--;
+                    negRevisedButtonInstanceStartPosition--;
                 }
             }
 
@@ -121,7 +126,7 @@ public class ButtonController : MonoBehaviour
                         continue;
                     }
 
-                    if (buttonInstance <= -revisedButtonInstanceStartPosition)
+                    if (buttonInstance <= -negRevisedButtonInstanceStartPosition && obstacleRowBlockingPath && negRevisedButtonInstanceStartPosition > 0)
                     {
                         continue;
                     }
@@ -137,7 +142,7 @@ public class ButtonController : MonoBehaviour
         }
     }
 
-    private void SetObstacleVariables(out List<Obstacles> detectedObstacles, out int revisedButtonInstanceStartPosition, out int xObstacleCharacterDistance, out bool obstaclesPresent)
+    private void SetObstacleVariables(out List<Obstacles> detectedObstacles, out int negRevisedButtonInstanceStartPosition, out int xObstacleCharacterDistance, out bool obstaclesPresent)
     {
         if (character.transform.GetChild(0).gameObject.GetComponent<DetectObstacles>().obstacles.Count > 0)
         {
@@ -149,15 +154,15 @@ public class ButtonController : MonoBehaviour
                 new Vector3(detectedObstacles[4].transform.position.x, 0));
 
             
-            revisedButtonInstanceStartPosition = character.movesAvailable - xObstacleCharacterDistance  ;
+            negRevisedButtonInstanceStartPosition = character.movesAvailable - xObstacleCharacterDistance  ;
         }
         else
         {
             obstaclesPresent = false;
-            detectedObstacles = null;
+            detectedObstacles = new List<Obstacles>();
 
             xObstacleCharacterDistance = 0;
-            revisedButtonInstanceStartPosition = 0;
+            negRevisedButtonInstanceStartPosition = 0;
         }
     }
 

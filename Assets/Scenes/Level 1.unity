@@ -151,6 +151,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   obstacles: []
+  sortedObstacles: []
+  obstacleRowblockage: []
+  centerObstacle: {fileID: 0}
 --- !u!4 &258627819
 Transform:
   m_ObjectHideFlags: 0
@@ -425,6 +428,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Zerk (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 468308859938679896, guid: 52a8c38e19443af4f8877ca8c7b5ed44,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 468308859938679900, guid: 52a8c38e19443af4f8877ca8c7b5ed44,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -577,6 +585,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Zerk (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 468308859938679896, guid: 52a8c38e19443af4f8877ca8c7b5ed44,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 468308859938679900, guid: 52a8c38e19443af4f8877ca8c7b5ed44,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -659,7 +672,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1475154882
 Transform:
   m_ObjectHideFlags: 0
