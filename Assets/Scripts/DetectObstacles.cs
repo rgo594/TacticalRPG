@@ -9,8 +9,9 @@ public class DetectObstacles : MonoBehaviour
     public List<Obstacles> sortedObstacles;
     public List<Obstacles> obstacleRowblockage;
     public Obstacles centerObstacle;
-    bool sortingFinished = true;
-    bool coo = true;
+
+    bool sortingFinished = false;
+    bool obstacleRowPresent = false;
 
     IEnumerable<Obstacles> query;
 
@@ -21,28 +22,27 @@ public class DetectObstacles : MonoBehaviour
     {
         characterMovement = gameObject.GetComponentInParent(typeof(CharacterMovement)) as CharacterMovement;
         buttonController = FindObjectOfType<ButtonController>();
-        //Debug.Log(gameObject.transform.parent.transform.position);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.GetComponent<Obstacles>())
         {
-            obstacles.Add(collision.GetComponent<Obstacles>());
-            query = obstacles.OrderBy(obstacle => obstacle.transform.position.x);
+            obstacles.Add(collision.GetComponent<Obstacles>());    
+            obstacleRowPresent = false;
         }
+        query = obstacles.OrderBy(obstacle => obstacle.transform.position.x);
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        foreach(Obstacles obstacle in obstacles)
+        foreach (Obstacles obstacle in obstacles)
         {
             if (collision.GetComponent<Obstacles>() == obstacle)
             {
                 obstacles.Remove(obstacle);
             }
         }
-        sortingFinished = false;
     }
 
     private void SortObs()
@@ -51,41 +51,48 @@ public class DetectObstacles : MonoBehaviour
         {
             sortedObstacles.Add(obstacle);
         }
-        //yield return new WaitForEndOfFrame();
-        //need to reset somewhere
-        sortingFinished = false;
+        sortingFinished = true;
     }
 
     private void Update()
     {
         if (obstacles.Count > 0)
         {
-
             foreach (Obstacles obstacle in obstacles)
             {
                 if (obstacle.transform.position.x == gameObject.transform.parent.transform.position.x)
                 {
-                    centerObstacle = obstacle.GetComponent<Obstacles>();
+                    if(centerObstacle)
+                    {
+                        if(centerObstacle.transform.position.x != gameObject.transform.parent.transform.position.x)
+                        {
+                            obstacleRowblockage.Clear();
+                            obstacleRowPresent = false;
+                            centerObstacle = obstacle.GetComponent<Obstacles>();
+                        }
+                    }
+                    else
+                    {
+                        centerObstacle = obstacle.GetComponent<Obstacles>();
+                    }
                 }
             }
 
         }
-        if(sortingFinished && obstacles.Count > 0)
+        if (sortingFinished == false && obstacles.Count > 0)
         {
             SortObs();
         }
 
-        if (centerObstacle && coo)
+        if (centerObstacle && obstacleRowPresent == false)
         {
             for (int i = 0; i < sortedObstacles.Count; i++)
             {
-                //Debug.Log($"{i}: ob: {(int)obstacles[i].transform.position.x} centerObs: {(int)centerObstacle.transform.position.x + i} {(int)obstacles[i].transform.position.x == (int)centerObstacle.transform.position.x + i}");
-                if ((int)sortedObstacles[i].transform.position.x == (int)centerObstacle.transform.position.x + i)
+                if ((int)sortedObstacles[i + (int)centerObstacle.transform.position.x].transform.position.x == (int)centerObstacle.transform.position.x + i)
                 {
-                    obstacleRowblockage.Add(sortedObstacles[i]);
+                    obstacleRowblockage.Add(sortedObstacles[i + (int)centerObstacle.transform.position.x]);
                 }
-                //need to reset somewhere
-                coo = false;
+                obstacleRowPresent = true;
             }
 
         }
