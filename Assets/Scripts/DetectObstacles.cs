@@ -12,6 +12,7 @@ public class DetectObstacles : MonoBehaviour
 
     bool sortingFinished = false;
     bool obstacleRowPresent = false;
+    bool obstacleRowPresentLeft = false;
 
     IEnumerable<Obstacles> query;
 
@@ -28,8 +29,9 @@ public class DetectObstacles : MonoBehaviour
     {
         if (collision.GetComponent<Obstacles>())
         {
-            obstacles.Add(collision.GetComponent<Obstacles>());    
+            obstacles.Add(collision.GetComponent<Obstacles>());
             obstacleRowPresent = false;
+            obstacleRowPresentLeft = false;
         }
         query = obstacles.OrderBy(obstacle => obstacle.transform.position.x);
     }
@@ -68,6 +70,7 @@ public class DetectObstacles : MonoBehaviour
                         {
                             obstacleRowblockage.Clear();
                             obstacleRowPresent = false;
+                            obstacleRowPresentLeft = false;
                             centerObstacle = obstacle.GetComponent<Obstacles>();
                         }
                     }
@@ -77,7 +80,7 @@ public class DetectObstacles : MonoBehaviour
                     }
                 }
             }
-
+            //need to clear out obstacleRows if not on an obstacle
         }
         if (sortingFinished == false && obstacles.Count > 0)
         {
@@ -87,15 +90,37 @@ public class DetectObstacles : MonoBehaviour
         if (centerObstacle && obstacleRowPresent == false)
         {
             for (int i = 0; i < sortedObstacles.Count; i++)
-            {
+            { 
                 if ((int)sortedObstacles[i + (int)centerObstacle.transform.position.x].transform.position.x == (int)centerObstacle.transform.position.x + i)
                 {
                     obstacleRowblockage.Add(sortedObstacles[i + (int)centerObstacle.transform.position.x]);
+                }
+                else
+                {
+                    break;
                 }
                 obstacleRowPresent = true;
             }
 
         }
-
+        if (centerObstacle && obstacleRowPresentLeft == false)
+        {
+            for (int i = 0; i < sortedObstacles.Count; i++)
+            {
+                if ((int)sortedObstacles[(int)centerObstacle.transform.position.x - i].transform.position.x == (int)centerObstacle.transform.position.x)
+                {
+                    continue;
+                }
+                else if ((int)sortedObstacles[(int)centerObstacle.transform.position.x - i].transform.position.x == (int)centerObstacle.transform.position.x - i)
+                {
+                    obstacleRowblockage.Add(sortedObstacles[(int)centerObstacle.transform.position.x - i]);
+                }
+                else
+                {
+                    break;
+                }
+                obstacleRowPresentLeft = true;
+            }
+        }
     }
 }
