@@ -64,9 +64,9 @@ public class DetectObstacles : MonoBehaviour
             {
                 if (obstacle.transform.position.x == gameObject.transform.parent.transform.position.x)
                 {
-                    if(centerObstacle)
+                    if (centerObstacle)
                     {
-                        if(centerObstacle.transform.position.x != gameObject.transform.parent.transform.position.x)
+                        if (centerObstacle.transform.position.x != gameObject.transform.parent.transform.position.x)
                         {
                             obstacleRowblockage.Clear();
                             obstacleRowPresent = false;
@@ -87,40 +87,22 @@ public class DetectObstacles : MonoBehaviour
             SortObs();
         }
 
+        //need to modify to work for negatives too
+        //doesn't include center obs
         if (centerObstacle && obstacleRowPresent == false)
         {
-            for (int i = 0; i < sortedObstacles.Count; i++)
-            { 
-                if ((int)sortedObstacles[i + (int)centerObstacle.transform.position.x].transform.position.x == (int)centerObstacle.transform.position.x + i)
+            int que = (int)centerObstacle.transform.position.x;
+            foreach (Obstacles obstacle in sortedObstacles)
+            {
+                if (obstacle.transform.position.x == que)
                 {
-                    obstacleRowblockage.Add(sortedObstacles[i + (int)centerObstacle.transform.position.x]);
+                    obstacleRowblockage.Add(obstacle);
+                    que++;
                 }
-                else
-                {
-                    break;
-                }
-                obstacleRowPresent = true;
+
             }
 
-        }
-        if (centerObstacle && obstacleRowPresentLeft == false)
-        {
-            for (int i = 0; i < sortedObstacles.Count; i++)
-            {
-                if ((int)sortedObstacles[(int)centerObstacle.transform.position.x - i].transform.position.x == (int)centerObstacle.transform.position.x)
-                {
-                    continue;
-                }
-                else if ((int)sortedObstacles[(int)centerObstacle.transform.position.x - i].transform.position.x == (int)centerObstacle.transform.position.x - i)
-                {
-                    obstacleRowblockage.Add(sortedObstacles[(int)centerObstacle.transform.position.x - i]);
-                }
-                else
-                {
-                    break;
-                }
-                obstacleRowPresentLeft = true;
-            }
+            obstacleRowPresent = true;
         }
     }
 }
